@@ -258,7 +258,7 @@ class Scheduled_Change {
 	 * @param post $post the post to be copied
 	 * @return void
 	 */
-	public static function create_publishing_post( $postp ) {
+	public static function create_publishing_post( $post ) {
 		if ($post->post_type != 'page') return;
 
 		$new_author = wp_get_current_user();
