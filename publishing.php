@@ -14,12 +14,27 @@ class Scheduled_Change {
 	protected static $TAO_PUBLISH_STATUS     = 'tao_sc_publish';
 	protected static $TAO_PUBLISH_TEXTDOMAIN = 'tao_sc_td';
 
+
+	/**
+	 * Initializes TAO_PUBLISH_LABEL and TAO_PUBLISH_METABOX with their localized strings.
+	 *
+	 * This method initializes TAO_PUBLISH_LABEL and TAO_PUBLISH_METABOX with their localized 
+	 * strings and registers the tao_sc_publish post status.
+	 *
+	 * @return void
+	 */
 	public static function init() {
 		self::$TAO_PUBLISH_LABEL   = __( 'Scheduled Change', self::$TAO_PUBLISH_TEXTDOMAIN );
 		self::$TAO_PUBLISH_METABOX = __( 'Scheduled Change', self::$TAO_PUBLISH_TEXTDOMAIN );
 		self::register_post_status();
 	}
 
+	/**
+	 * Displays a post's publishing date.
+	 *
+	 * @see get_post_meta
+	 * @return void
+	 */
 	public static function load_pubdate() {
 		$stamp = get_post_meta( $_REQUEST['postid'], self::$TAO_PUBLISH_STATUS . '_pubdate', true );
 		if ( $stamp ) {
@@ -30,6 +45,12 @@ class Scheduled_Change {
 		}
 	}
 	
+	/**
+	 * Registers the post status tao_sc_publish.
+	 *
+	 * @see register_post_status
+	 * @return void
+	 */
 	public static function register_post_status() {
 		$args = array(
 			'label'                     => _x( self::$TAO_PUBLISH_LABEL, 'Status General Name', 'default' ),
@@ -42,6 +63,13 @@ class Scheduled_Change {
 		register_post_status( self::$TAO_PUBLISH_STATUS, $args );
 	}
 
+
+	/**
+	 * Adds post's state to 'scheduled changes'-posts.
+	 * 
+	 * @param array $states Array of post states
+	 * @global $post
+	 */
 	public static function display_post_states( $states ) {
 		global $post;
 		$arg = get_query_var('post_status');
@@ -52,6 +80,16 @@ class Scheduled_Change {
 	}
 	
 	
+	/**
+	 * Adds links for scheduled changes.
+	 *
+	 * Adds a link for immediate publishing to all sheduled posts. Adds a link to schedule a change
+	 * to all non-scheduled posts.
+	 *
+	 * @param array $actions Array of available actions added by previous hooks
+	 * @oaram post $post the post for which to add actions
+	 * @return array Array of available actions for the given post
+	 */
 	public static function page_row_actions( $actions, $post ) {
 		if ( $post->post_status == self::$TAO_PUBLISH_STATUS ) {
 			$action = '?action=workflow_publish_now&post=' . $post->ID;
@@ -64,6 +102,13 @@ class Scheduled_Change {
 		return $actions;
 	}
 	
+	
+	/**
+	 * Adds a column to the pages overview.
+	 *
+	 * @param array $columns Array of available columns added by previous hooks
+	 * @return array Array of available columns
+	 */
 	public static function manage_pages_columns( $columns ) {
 		$new = array();
 		foreach ( $columns as $key => $val ) {
@@ -75,8 +120,16 @@ class Scheduled_Change {
 		return $new;
 	}
 
+
+	/**
+	 * Manages the content of previously added custom columns.
+	 * 
+	 * @see Scheduled_Change::manage_pages_columns()
+	 * @param string $column Name of the column
+	 * @param int $post_id id of the current post
+	 */
 	public static function manage_pages_custom_column( $column, $post_id) {
-		if ( $column == 'tao_publish' ) {
+		if ( 'tao_publish' == $column ) {
 			$stamp = get_post_meta($post_id, self::$TAO_PUBLISH_STATUS . '_pubdate', true);
 
 			if($stamp)
@@ -84,12 +137,23 @@ class Scheduled_Change {
 		}
 	}
 
+
+	/**
+	 * Handles the admin action workflow_copy_to_publish.
+	 *
+	 * @return void
+	 */
 	public static function admin_action_workflow_copy_to_publish() {
 		$post = get_post( $_REQUEST['post'] );
 		self::create_publishing_post( $post );
 		wp_redirect( admin_url( 'edit.php?post_type='.$post->post_type ) );
 	}
 
+	/**
+	 * Handles the admin action workflow_publish_now
+	 *
+	 * @return void
+	 */
 	public static function admin_action_workflow_publish_now() {
 		$post = get_post( $_REQUEST['post'] );
 		self::publish_post( $post->ID );
@@ -97,6 +161,13 @@ class Scheduled_Change {
 	}
 
 
+	/**
+	 * Adds the 'scheduled change'-metabox to the edit-page screen.
+	 * 
+	 * @param post $post The post being currently edited
+	 + @see add_meta_box
+	 * @return void
+	 */
 	public static function add_meta_boxes_page( $post ) {
 		if($post->post_status != self::$TAO_PUBLISH_STATUS) return;
 
@@ -123,6 +194,12 @@ class Scheduled_Change {
 		add_meta_box( 'meta_' . self::$TAO_PUBLISH_STATUS, self::$TAO_PUBLISH_METABOX, create_function( '$post', 'Scheduled_Change::create_meta_box( $post );' ), 'page', 'side' );
 	}
 	
+	/**
+	 * Creates the HTML-Code for the 'scheduled change'-metabox
+	 *
+	 * @param post $post The post being currently edited
+	 * @return void
+	 */
 	public static function create_meta_box( $post ) {
 		wp_nonce_field( basename( __FILE__ ), self::$TAO_PUBLISH_STATUS . '_nonce' );
 		$metaname = self::$TAO_PUBLISH_STATUS . '_pubdate';
@@ -150,14 +227,24 @@ class Scheduled_Change {
 		<?php
 	}
 
+	/**
+	 * Prevents scheduled changes to switch to other post states.
+	 *
+	 * Prevents post with the state 'scheduled change' to switch to published after being saved
+	 *
+	 * @param string $new_status the post's new status
+	 * @param string $old_status the post's old status
+	 * @param post $post the post changing status
+	 * @return void
+	 */
 	public static function prevent_status_change ( $new_status, $old_status, $post ) {
 		if ( $old_status == self::$TAO_PUBLISH_STATUS && 'trash' != $new_status ) {
-			remove_action( 'save_post', array( 'TaoPublish', 'save_meta' ) );
+			remove_action( 'save_post', create_function( '$post_id, $post', 'return Scheduled_Change::save_meta( $post_id, $post );' ), 10 );
 
 			$post->post_status = self::$TAO_PUBLISH_STATUS;
 			$u = wp_update_post( $post, true );
 
-			add_action( 'save_post', array( 'TaoPublish', 'save_meta' ), 10, 2 );
+			add_action( 'save_post', create_function( '$post_id, $post', 'return Scheduled_Change::save_meta( $post_id, $post );' ), 10, 2 );
 		} elseif ( 'trash' == $new_status ) {
 			wp_clear_scheduled_hook( 'tao_publish_post', array( 'ID' => $post->ID ) );
 		} elseif ( 'trash' == $old_status && $new_status == self::$TAO_PUBLISH_STATUS ) {
@@ -165,8 +252,13 @@ class Scheduled_Change {
 		}
 	}
 
-
-	public static function create_publishing_post( $post, $parent_id = '' ) {
+	/**
+	 * Copies an entire post and sets it's status to 'scheduled change'
+	 *
+	 * @param post $post the post to be copied
+	 * @return void
+	 */
+	public static function create_publishing_post( $postp ) {
 		if ($post->post_type != 'page') return;
 
 		$new_author = wp_get_current_user();
@@ -197,11 +289,16 @@ class Scheduled_Change {
 				add_post_meta( $new_post_id, $key, $value );
 			}
 		}
-
 		add_post_meta( $new_post_id, self::$TAO_PUBLISH_STATUS . '_original', $post->ID );//and finally referencing the original post
-
 	}
 
+	/**
+	 * Saves a post's publishing date.
+	 *
+	 * @param int $post_id the post's id
+	 * @param post $post the post being saved
+	 * @return void
+	 */
 	public static function save_meta( $post_id, $post )
 	{
 		if ( $post->post_status == self::$TAO_PUBLISH_STATUS || get_post_meta($post_id, self::$TAO_PUBLISH_STATUS . '_original', true) ) {
@@ -221,6 +318,16 @@ class Scheduled_Change {
 		}
 	}
 
+	/**
+	 * Publishes a scheduled change
+	 *
+	 * Copies the 'scheduled change'-post's contents and meta into it's parent's and then deletes
+	 * the scheduled change. This function is either called by wp_cron or if the user hits the
+	 * 'publish now' action
+	 * 
+	 * @param int $post_id the post's id
+	 * @return int the original post's id
+	 */
 	public static function publish_post( $post_id ) {
 		$orig = get_post( get_post_meta( $post_id, self::$TAO_PUBLISH_STATUS . '_original', true ) );
  
@@ -251,6 +358,14 @@ class Scheduled_Change {
 		return $orig->ID;
 	}
 
+
+	/**
+	 * Reformats a timestamp into human readable publishing date
+	 *
+	 * @param int $stamp unix timestamp to be formatted
+	 * @see date_i18n
+	 * @return string the formatted timestamp
+	 */
 	public static function getPubdate( $stamp ) {
 		$str = date_i18n( 'j. F Y', $stamp ) . ' - ';
 		switch( date_i18n( 'H', $stamp ) ) {
