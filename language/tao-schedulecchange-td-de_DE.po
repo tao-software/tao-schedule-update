@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Scheduled Change v\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-04-08 10:30+0200\n"
-"PO-Revision-Date: 2014-04-08 12:39:11+0000\n"
+"PO-Revision-Date: 2014-04-08 14:40:07+0000\n"
 "Last-Translator: TAO Software <software@tao.at>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -22,47 +22,41 @@ msgstr ""
 
 #: publishing.php:28
 #: publishing.php:29
-#@ tao-sc-td
+#@ tao-schedulecchange-td
 msgid "Scheduled Change"
 msgstr "Geplante Änderung"
 
 #: publishing.php:133
-#: publishing.php:231
-#@ tao-sc-td
+#@ tao-schedulecchange-td
 msgid "Publish Now"
 msgstr "Jetzt Veröffentlichen"
 
 #: publishing.php:153
-#: publishing.php:258
-#: publishing.php:260
-#@ tao-sc-td
+#: publishing.php:262
+#: publishing.php:264
+#@ tao-schedulecchange-td
 msgid "Releasedate"
 msgstr "Veröffentlichungsdatum"
 
-#: publishing.php:263
-#: publishing.php:265
-#@ tao-sc-td
+#: publishing.php:267
+#: publishing.php:269
+#@ tao-schedulecchange-td
 msgid "Time"
 msgstr "Zeit"
 
-#: publishing.php:278
+#: publishing.php:281
 #, php-format
-#@ tao-sc-td
+#@ tao-schedulecchange-td
 msgid "Please enter <i>Time</i> as %s"
 msgstr "Ihre Zeitzone ist %s"
 
 #: publishing.php:112
-#@ tao-sc-td
+#@ tao-schedulecchange-td
 msgid "Original"
 msgstr "Original"
 
-#: publishing.php:230
+#: publishing.php:234
 #@ default
 msgid "Save"
-msgstr ""
-
-#: publishing.php:233
-#@ tao-sc-td
-msgid "Caution: This action can not be reverted!"
-msgstr "Achtung: dieser Vorgang kann nicht rückgängig gemacht werden!"
+msgstr "Speichern"
 
