@@ -24,7 +24,7 @@ class Scheduled_Change {
 	 * @return void
 	 */
 	public static function init() {
-
+		self::load_plugin_textdomain();
 		self::$TAO_PUBLISH_LABEL   = __( 'Scheduled Change', self::$TAO_PUBLISH_TEXTDOMAIN );
 		self::$TAO_PUBLISH_METABOX = __( 'Scheduled Change', self::$TAO_PUBLISH_TEXTDOMAIN );
 		self::register_post_status();
@@ -37,7 +37,15 @@ class Scheduled_Change {
 		}
 	}
 	
-	
+	/**
+	 * Wrapper for wp's own load_plugin_textdomain.
+	 *
+	 * @access private
+	 * @return void
+	 */
+	private static function load_plugin_textdomain(){
+		load_plugin_textdomain( 'tao-sc-td', false, dirname( plugin_basename( __FILE__ ) ) . '/language/' );
+	}
 	
 	/**
 	 * Retreives all currently registered posttypes.
@@ -446,7 +454,7 @@ class Scheduled_Change {
 		$post->post_name = $orig->post_name;
 		$post->guid = $orig->guid;
 		$post->post_parent = $orig->post_parent;
-		$post->post_status = $orig->post_status;#'publish';
+		$post->post_status = 'publish';
 
 		delete_post_meta( $orig->ID, self::$TAO_PUBLISH_STATUS . '_original' );
 		delete_post_meta( $orig->ID, self::$TAO_PUBLISH_STATUS . '_pubdate' );
