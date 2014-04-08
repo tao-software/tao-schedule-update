@@ -8,4 +8,9 @@ jQuery(document).ready(function($){
 			};
 
 	$('#' + tao_sc_dp_id).datepicker(options);
+	
+	$('#publish').val(tao_sc_save);
+	$('#delete-action a').text(tao_sc_pubnow_text);
+	$('#delete-action a').attr('href', tao_sc_pubnow_link);
+	$('#delete-action a').attr('title', tao_sc_pubnow_title);
 });

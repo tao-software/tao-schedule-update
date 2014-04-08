@@ -428,8 +428,8 @@ class Scheduled_Change {
 	/**
 	 * Publishes a scheduled change
 	 *
-	 * Copies the 'scheduled change'-post's contents and meta into it's parent's and then deletes
-	 * the scheduled change. This function is either called by wp_cron or if the user hits the
+	 * Copies the original post's contents and meta into it's "scheduled change" and then deletes
+	 * the original post. This function is either called by wp_cron or if the user hits the
 	 * 'publish now' action
 	 *
 	 * @param int $post_id the post's id
@@ -454,7 +454,8 @@ class Scheduled_Change {
 		$post->post_name = $orig->post_name;
 		$post->guid = $orig->guid;
 		$post->post_parent = $orig->post_parent;
-		$post->post_status = 'publish';
+		$post->post_status = $orig->post_status;
+		$post->post_date = date_i18n( 'Y-m-d H:i:s' ); //we need this to get wp to recognize this as a newly updated post
 
 		delete_post_meta( $orig->ID, self::$TAO_PUBLISH_STATUS . '_original' );
 		delete_post_meta( $orig->ID, self::$TAO_PUBLISH_STATUS . '_pubdate' );
