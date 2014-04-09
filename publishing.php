@@ -234,7 +234,7 @@ class TAO_ScheduledChange {
 				'save' => __( 'Save' ),
 			),
 		);
-		
+
 		wp_localize_script( self::$TAO_PUBLISH_STATUS . '-datepicker.js', 'TAO_ScheduledChange', $js_data );
 
 		add_meta_box( 'meta_' . self::$TAO_PUBLISH_STATUS, self::$TAO_PUBLISH_METABOX, create_function( '$post', 'TAO_ScheduledChange::create_meta_box( $post );' ), $post_type, 'side' );
@@ -279,6 +279,9 @@ class TAO_ScheduledChange {
 			</select>
 			<p>
 				<?php echo sprintf( __( 'Please enter <i>Time</i> as %s', self::$TAO_PUBLISH_TEXTDOMAIN ), self::get_timezone_string() ); ?>
+			</p>
+			<p>
+				<div id="pastmsg" style="color:red; display:none;"><?php echo __( 'The Releasedate is in the past, this post will be published 5 Minutes from now.', self::$TAO_PUBLISH_TEXTDOMAIN ); ?></div>
 			</p>
 		<?php
 	}
@@ -421,7 +424,7 @@ class TAO_ScheduledChange {
 				$stamp = DateTime::createFromFormat('d.m.Y H:i', $_POST[$pub] . ' ' . $_POST[$pub.'_time_hrs'] . ':' . $_POST[$pub.'_time_mins'], $tz )->getTimestamp();
 				if ( ! $stamp || $stamp <= time())
 					$stamp = strtotime('+5 minutes');
-				
+
 				wp_clear_scheduled_hook( 'tao_publish_post', array( 'ID' => $post_id ) );
 				update_post_meta( $post_id, $pub, $stamp );
 				wp_schedule_single_event( $stamp, 'tao_publish_post', array('ID' => $post_id) );

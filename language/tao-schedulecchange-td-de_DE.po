@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Scheduled Change v\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-04-08 10:30+0200\n"
-"PO-Revision-Date: 2014-04-08 14:40:07+0000\n"
+"PO-Revision-Date: 2014-04-09 07:24:31+0000\n"
 "Last-Translator: TAO Software <software@tao.at>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -59,4 +59,9 @@ msgstr "Original"
 #@ default
 msgid "Save"
 msgstr "Speichern"
+
+#: publishing.php:284
+#@ tao-schedulecchange-td
+msgid "The Releasedate is in the past, this post will be published 5 Minutes from now."
+msgstr "Das Veröffentlichungsdatum liegt in der Vergangenheit, dieser Post wird in 5 Minuten veröffentlicht."
 
