@@ -18,6 +18,8 @@ Features
 
 TAO Scheduled change is a really small plugin. It only does one thing, but tries to do this the right way: Take a copy of an arbitrary post/page/cpt, change it and make it replace the original post at a given date and time in the future.
 
+![Feature](https://raw.githubusercontent.com/tao-software/tao-schedule-update/master/tao-schedule-update.gif)
+
 Installation 
 ------------
 
