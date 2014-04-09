@@ -17,7 +17,7 @@ jQuery(document).ready(function($){
 	$('select[name=tao_sc_publish_pubdate_time_mins]').on('change', function(evt) { TAO_ScheduleUpdate.checkTime(); });
 });
 
-TAO_ScheduleUpdate = TAO_ScheduledChange || {};
+TAO_ScheduleUpdate = TAO_ScheduleUpdate || {};
 
 TAO_ScheduleUpdate.checkTime = function() {
 	$ = jQuery;
