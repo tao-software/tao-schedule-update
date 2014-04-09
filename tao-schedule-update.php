@@ -1,16 +1,16 @@
 <?php
 /**
- * Plugin Name: Scheduled Change
+ * Plugin Name: TAO Schedule Update
  * Description: Allows you to plan changes on any post type
  * Author: TAO Software
  * Author URI: http://software.tao.at
  * License: MIT
  */
 
-class TAO_ScheduledChange {
+class TAO_ScheduleUpdate {
 
-	protected static $TAO_PUBLISH_LABEL      = 'Scheduled Change';
-	protected static $TAO_PUBLISH_METABOX    = 'Scheduled Change';
+	protected static $TAO_PUBLISH_LABEL      = 'Scheduled Update';
+	protected static $TAO_PUBLISH_METABOX    = 'Scheduled Update';
 	protected static $TAO_PUBLISH_STATUS     = 'tao_sc_publish';
 	protected static $TAO_PUBLISH_TEXTDOMAIN = 'tao-schedulecchange-td';
 
@@ -25,15 +25,15 @@ class TAO_ScheduledChange {
 	 */
 	public static function init() {
 		self::load_plugin_textdomain();
-		self::$TAO_PUBLISH_LABEL   = __( 'Scheduled Change', self::$TAO_PUBLISH_TEXTDOMAIN );
-		self::$TAO_PUBLISH_METABOX = __( 'Scheduled Change', self::$TAO_PUBLISH_TEXTDOMAIN );
+		self::$TAO_PUBLISH_LABEL   = __( 'Scheduled Update', self::$TAO_PUBLISH_TEXTDOMAIN );
+		self::$TAO_PUBLISH_METABOX = __( 'Scheduled Update', self::$TAO_PUBLISH_TEXTDOMAIN );
 		self::register_post_status();
 
-		$pt = TAO_ScheduledChange::get_post_types();
+		$pt = TAO_ScheduleUpdate::get_post_types();
 		foreach ( $pt as $type ) {
-			add_action( 'manage_edit-'.$type->name.'_columns', create_function( '$columns', 'return TAO_ScheduledChange::manage_pages_columns( $columns );' ) );
-			add_filter( 'manage_'.$type->name.'_posts_custom_column', create_function( '$column, $post_id', 'return TAO_ScheduledChange::manage_pages_custom_column( $column, $post_id );' ), 10, 2 );
-			add_action( 'add_meta_boxes', create_function( '$post_type, $post', 'return TAO_ScheduledChange::add_meta_boxes_page( $post_type, $post );' ), 10, 2 );
+			add_action( 'manage_edit-'.$type->name.'_columns', create_function( '$columns', 'return TAO_ScheduleUpdate::manage_pages_columns( $columns );' ) );
+			add_filter( 'manage_'.$type->name.'_posts_custom_column', create_function( '$column, $post_id', 'return TAO_ScheduleUpdate::manage_pages_custom_column( $column, $post_id );' ), 10, 2 );
+			add_action( 'add_meta_boxes', create_function( '$post_type, $post', 'return TAO_ScheduleUpdate::add_meta_boxes_page( $post_type, $post );' ), 10, 2 );
 		}
 	}
 
@@ -94,7 +94,7 @@ class TAO_ScheduledChange {
 
 
 	/**
-	 * Adds post's state to 'scheduled changes'-posts.
+	 * Adds post's state to 'scheduled updates'-posts.
 	 *
 	 * @param array $states Array of post states
 	 * @global $post
@@ -118,7 +118,7 @@ class TAO_ScheduledChange {
 
 
 	/**
-	 * Adds links for scheduled changes.
+	 * Adds links for scheduled updates.
 	 *
 	 * Adds a link for immediate publishing to all sheduled posts. Adds a link to schedule a change
 	 * to all non-scheduled posts.
@@ -161,7 +161,7 @@ class TAO_ScheduledChange {
 	/**
 	 * Manages the content of previously added custom columns.
 	 *
-	 * @see TAO_ScheduledChange::manage_pages_columns()
+	 * @see TAO_ScheduleUpdate::manage_pages_columns()
 	 * @param string $column Name of the column
 	 * @param int $post_id id of the current post
 	 */
@@ -199,7 +199,7 @@ class TAO_ScheduledChange {
 
 
 	/**
-	 * Adds the 'scheduled change'-metabox to the edit-page screen.
+	 * Adds the 'scheduled update'-metabox to the edit-page screen.
 	 *
 	 * @param post $post The post being currently edited
 	 + @see add_meta_box
@@ -235,13 +235,13 @@ class TAO_ScheduledChange {
 			),
 		);
 
-		wp_localize_script( self::$TAO_PUBLISH_STATUS . '-datepicker.js', 'TAO_ScheduledChange', $js_data );
+		wp_localize_script( self::$TAO_PUBLISH_STATUS . '-datepicker.js', 'TAO_ScheduleUpdate', $js_data );
 
-		add_meta_box( 'meta_' . self::$TAO_PUBLISH_STATUS, self::$TAO_PUBLISH_METABOX, create_function( '$post', 'TAO_ScheduledChange::create_meta_box( $post );' ), $post_type, 'side' );
+		add_meta_box( 'meta_' . self::$TAO_PUBLISH_STATUS, self::$TAO_PUBLISH_METABOX, create_function( '$post', 'TAO_ScheduleUpdate::create_meta_box( $post );' ), $post_type, 'side' );
 	}
 
 	/**
-	 * Creates the HTML-Code for the 'scheduled change'-metabox
+	 * Creates the HTML-Code for the 'scheduled update'-metabox
 	 *
 	 * @param post $post The post being currently edited
 	 * @return void
@@ -338,9 +338,9 @@ class TAO_ScheduledChange {
 	}
 
 	/**
-	 * Prevents scheduled changes to switch to other post states.
+	 * Prevents scheduled updates to switch to other post states.
 	 *
-	 * Prevents post with the state 'scheduled change' to switch to published after being saved
+	 * Prevents post with the state 'scheduled update' to switch to published after being saved
 	 *
 	 * @param string $new_status the post's new status
 	 * @param string $old_status the post's old status
@@ -349,12 +349,12 @@ class TAO_ScheduledChange {
 	 */
 	public static function prevent_status_change ( $new_status, $old_status, $post ) {
 		if ( $old_status == self::$TAO_PUBLISH_STATUS && 'trash' != $new_status ) {
-			remove_action( 'save_post', create_function( '$post_id, $post', 'return TAO_ScheduledChange::save_meta( $post_id, $post );' ), 10 );
+			remove_action( 'save_post', create_function( '$post_id, $post', 'return TAO_ScheduleUpdate::save_meta( $post_id, $post );' ), 10 );
 
 			$post->post_status = self::$TAO_PUBLISH_STATUS;
 			$u = wp_update_post( $post, true );
 
-			add_action( 'save_post', create_function( '$post_id, $post', 'return TAO_ScheduledChange::save_meta( $post_id, $post );' ), 10, 2 );
+			add_action( 'save_post', create_function( '$post_id, $post', 'return TAO_ScheduleUpdate::save_meta( $post_id, $post );' ), 10, 2 );
 		} elseif ( 'trash' == $new_status ) {
 			wp_clear_scheduled_hook( 'tao_publish_post', array( 'ID' => $post->ID ) );
 		} elseif ( 'trash' == $old_status && $new_status == self::$TAO_PUBLISH_STATUS ) {
@@ -363,7 +363,7 @@ class TAO_ScheduledChange {
 	}
 
 	/**
-	 * Copies an entire post and sets it's status to 'scheduled change'
+	 * Copies an entire post and sets it's status to 'scheduled update'
 	 *
 	 * @param post $post the post to be copied
 	 * @return void
@@ -413,8 +413,8 @@ class TAO_ScheduledChange {
 	public static function save_meta( $post_id, $post )
 	{
 		if ( $post->post_status == self::$TAO_PUBLISH_STATUS || get_post_meta($post_id, self::$TAO_PUBLISH_STATUS . '_original', true) ) {
-			$nonce = TAO_ScheduledChange::$TAO_PUBLISH_STATUS . '_nonce';
-			$pub = TAO_ScheduledChange::$TAO_PUBLISH_STATUS . '_pubdate';
+			$nonce = TAO_ScheduleUpdate::$TAO_PUBLISH_STATUS . '_nonce';
+			$pub = TAO_ScheduleUpdate::$TAO_PUBLISH_STATUS . '_pubdate';
 
 			if (isset( $_POST[$nonce] ) && wp_verify_nonce( $_POST[$nonce], basename( __FILE__ ) !== 1 ) ) return $post_id;
 			if ( ! current_user_can( get_post_type_object( $post->post_type )->cap->edit_post, $post_id ) ) return $post_id;
@@ -433,9 +433,9 @@ class TAO_ScheduledChange {
 	}
 
 	/**
-	 * Publishes a scheduled change
+	 * Publishes a scheduled update
 	 *
-	 * Copies the original post's contents and meta into it's "scheduled change" and then deletes
+	 * Copies the original post's contents and meta into it's "scheduled update" and then deletes
 	 * the original post. This function is either called by wp_cron or if the user hits the
 	 * 'publish now' action
 	 *
@@ -478,7 +478,7 @@ class TAO_ScheduledChange {
 	 * Reformats a timestamp into human readable publishing date and time
 	 *
 	 * @param int $stamp unix timestamp to be formatted
-	 * @see date_i18n, DateTime, TAO_ScheduledChange::get_timezone_object
+	 * @see date_i18n, DateTime, TAO_ScheduleUpdate::get_timezone_object
 	 * @return string the formatted timestamp
 	 */
 	public static function getPubdate( $stamp ) {
@@ -489,16 +489,16 @@ class TAO_ScheduledChange {
 	}
 }
 
-add_action( 'save_post', create_function( '$post_id, $post', 'return TAO_ScheduledChange::save_meta( $post_id, $post );' ), 10, 2 );
-add_action( 'tao_publish_post', create_function( '$post_id', 'return TAO_ScheduledChange::publish_post( $post_id );' ) );
+add_action( 'save_post', create_function( '$post_id, $post', 'return TAO_ScheduleUpdate::save_meta( $post_id, $post );' ), 10, 2 );
+add_action( 'tao_publish_post', create_function( '$post_id', 'return TAO_ScheduleUpdate::publish_post( $post_id );' ) );
 
-add_action( 'wp_ajax_load_pubdate', create_function( '', 'return TAO_ScheduledChange::load_pubdate();' ) );
-add_action( 'init', create_function( '', 'return TAO_ScheduledChange::init();' ) );
-add_action( 'admin_action_workflow_copy_to_publish', create_function( '', 'return TAO_ScheduledChange::admin_action_workflow_copy_to_publish();' ) );
-add_action( 'admin_action_workflow_publish_now', create_function( '', 'return TAO_ScheduledChange::admin_action_workflow_publish_now();' ) );
-add_action( 'transition_post_status', create_function( '$new_status, $old_status, $post', 'return TAO_ScheduledChange::prevent_status_change( $new_status, $old_status, $post );' ), 10, 3 );
+add_action( 'wp_ajax_load_pubdate', create_function( '', 'return TAO_ScheduleUpdate::load_pubdate();' ) );
+add_action( 'init', create_function( '', 'return TAO_ScheduleUpdate::init();' ) );
+add_action( 'admin_action_workflow_copy_to_publish', create_function( '', 'return TAO_ScheduleUpdate::admin_action_workflow_copy_to_publish();' ) );
+add_action( 'admin_action_workflow_publish_now', create_function( '', 'return TAO_ScheduleUpdate::admin_action_workflow_publish_now();' ) );
+add_action( 'transition_post_status', create_function( '$new_status, $old_status, $post', 'return TAO_ScheduleUpdate::prevent_status_change( $new_status, $old_status, $post );' ), 10, 3 );
 
-add_filter( 'display_post_states', create_function( '$states', 'return TAO_ScheduledChange::display_post_states( $states );' ) );
-add_filter( 'page_row_actions', create_function( '$actions, $post', 'return TAO_ScheduledChange::page_row_actions( $actions, $post );' ), 10, 2 );
-add_filter( 'post_row_actions', create_function( '$actions, $post', 'return TAO_ScheduledChange::page_row_actions( $actions, $post );' ), 10, 2 );
-add_filter( 'manage_pages_columns', create_function( '$columns', 'return TAO_ScheduledChange::manage_pages_columns( $columns );' ) );
+add_filter( 'display_post_states', create_function( '$states', 'return TAO_ScheduleUpdate::display_post_states( $states );' ) );
+add_filter( 'page_row_actions', create_function( '$actions, $post', 'return TAO_ScheduleUpdate::page_row_actions( $actions, $post );' ), 10, 2 );
+add_filter( 'post_row_actions', create_function( '$actions, $post', 'return TAO_ScheduleUpdate::page_row_actions( $actions, $post );' ), 10, 2 );
+add_filter( 'manage_pages_columns', create_function( '$columns', 'return TAO_ScheduleUpdate::manage_pages_columns( $columns );' ) );

@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Scheduled Change v\n"
+"Project-Id-Version: Scheduled Update v\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-04-08 10:30+0200\n"
 "PO-Revision-Date: 2014-04-09 07:24:31+0000\n"
@@ -22,36 +22,36 @@ msgstr ""
 
 #: publishing.php:28
 #: publishing.php:29
-#@ tao-schedulecchange-td
-msgid "Scheduled Change"
+#@ tao-scheduleupdate-td
+msgid "Scheduled Update"
 msgstr "Geplante Änderung"
 
 #: publishing.php:133
-#@ tao-schedulecchange-td
+#@ tao-scheduleupdate-td
 msgid "Publish Now"
 msgstr "Jetzt Veröffentlichen"
 
 #: publishing.php:153
 #: publishing.php:262
 #: publishing.php:264
-#@ tao-schedulecchange-td
+#@ tao-scheduleupdate-td
 msgid "Releasedate"
 msgstr "Veröffentlichungsdatum"
 
 #: publishing.php:267
 #: publishing.php:269
-#@ tao-schedulecchange-td
+#@ tao-scheduleupdate-td
 msgid "Time"
 msgstr "Zeit"
 
 #: publishing.php:281
 #, php-format
-#@ tao-schedulecchange-td
+#@ tao-scheduleupdate-td
 msgid "Please enter <i>Time</i> as %s"
 msgstr "Ihre Zeitzone ist %s"
 
 #: publishing.php:112
-#@ tao-schedulecchange-td
+#@ tao-scheduleupdate-td
 msgid "Original"
 msgstr "Original"
 
@@ -61,7 +61,7 @@ msgid "Save"
 msgstr "Speichern"
 
 #: publishing.php:284
-#@ tao-schedulecchange-td
+#@ tao-scheduleupdate-td
 msgid "The Releasedate is in the past, this post will be published 5 Minutes from now."
 msgstr "Das Veröffentlichungsdatum liegt in der Vergangenheit, dieser Post wird in 5 Minuten veröffentlicht."
 
