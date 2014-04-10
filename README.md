@@ -1,4 +1,4 @@
-tao-scheduled-update
+tao-schedule-update
 ====================
 
 A simple Wordpress Plugin to Schedule Content Updates
