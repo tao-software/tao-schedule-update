@@ -1,5 +1,5 @@
 === tao-schedule-update ===
-Contributors: Paul Elmaier, Roman Weinberger
+Contributors: romanweinberger, syberspace
 Donate link: http://software.tao.at/
 Tags: publishing, timing, chron
 Requires at least: 3.7.0
