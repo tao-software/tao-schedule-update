@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Scheduled Update v\n"
+"Project-Id-Version: TAO Schedule Update v1.02\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-04-08 10:30+0200\n"
-"PO-Revision-Date: 2014-04-09 07:24:31+0000\n"
+"PO-Revision-Date: 2014-11-18 15:40:37+0000\n"
 "Last-Translator: TAO Software <software@tao.at>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -20,47 +20,47 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Textdomain-Support: yes"
 
-#: publishing.php:28
-#: publishing.php:29
+#: tao-schedule-update.php:29
+#: tao-schedule-update.php:30
 #@ tao-scheduleupdate-td
 msgid "Scheduled Update"
 msgstr "Geplante Änderung"
 
-#: publishing.php:133
+#: tao-schedule-update.php:139
 #@ tao-scheduleupdate-td
 msgid "Publish Now"
 msgstr "Jetzt Veröffentlichen"
 
-#: publishing.php:153
-#: publishing.php:262
-#: publishing.php:264
+#: tao-schedule-update.php:159
+#: tao-schedule-update.php:268
+#: tao-schedule-update.php:270
 #@ tao-scheduleupdate-td
 msgid "Releasedate"
 msgstr "Veröffentlichungsdatum"
 
-#: publishing.php:267
-#: publishing.php:269
+#: tao-schedule-update.php:273
+#: tao-schedule-update.php:275
 #@ tao-scheduleupdate-td
 msgid "Time"
 msgstr "Zeit"
 
-#: publishing.php:281
+#: tao-schedule-update.php:287
 #, php-format
 #@ tao-scheduleupdate-td
 msgid "Please enter <i>Time</i> as %s"
 msgstr "Ihre Zeitzone ist %s"
 
-#: publishing.php:112
+#: tao-schedule-update.php:118
 #@ tao-scheduleupdate-td
 msgid "Original"
 msgstr "Original"
 
-#: publishing.php:234
-#@ default
+#: tao-schedule-update.php:240
+#@ tao-scheduleupdate-td
 msgid "Save"
 msgstr "Speichern"
 
-#: publishing.php:284
+#: tao-schedule-update.php:290
 #@ tao-scheduleupdate-td
 msgid "The Releasedate is in the past, this post will be published 5 Minutes from now."
 msgstr "Das Veröffentlichungsdatum liegt in der Vergangenheit, dieser Post wird in 5 Minuten veröffentlicht."

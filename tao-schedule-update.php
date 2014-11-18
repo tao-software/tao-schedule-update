@@ -45,7 +45,7 @@ class TAO_ScheduleUpdate {
 	 * @return void
 	 */
 	private static function load_plugin_textdomain(){
-		load_plugin_textdomain( 'tao-schedulecchange-td', false, dirname( plugin_basename( __FILE__ ) ) . '/language/' );
+		load_plugin_textdomain( 'tao-scheduleupdate-td', false, dirname( plugin_basename( __FILE__ ) ) . '/language/' );
 	}
 
 	/**
@@ -237,7 +237,7 @@ class TAO_ScheduleUpdate {
 				'elementid' => self::$TAO_PUBLISH_STATUS . '_pubdate',
 				),
 			'text' => array(
-				'save' => __( 'Save' ),
+				'save' => __( 'Save', self::$TAO_PUBLISH_TEXTDOMAIN ),
 			),
 		);
 
