@@ -4,6 +4,7 @@
  * Description: Allows you to plan changes on any post type
  * Author: TAO Software
  * Author URI: http://software.tao.at
+ * Version: 1.02
  * License: MIT
  */
 
@@ -44,7 +45,7 @@ class TAO_ScheduleUpdate {
 	 * @return void
 	 */
 	private static function load_plugin_textdomain(){
-		load_plugin_textdomain( 'tao-schedulecchange-td', false, dirname( plugin_basename( __FILE__ ) ) . '/language/' );
+		load_plugin_textdomain( 'tao-scheduleupdate-td', false, dirname( plugin_basename( __FILE__ ) ) . '/language/' );
 	}
 
 	/**
@@ -54,7 +55,7 @@ class TAO_ScheduleUpdate {
 	 * @return array Array of all registered post type as objects
 	 */
 	private static function get_post_types() {
-		return get_post_types( array( 'public' => true), 'objects' );
+		return get_post_types( array( 'public' => true ), 'objects' );
 	}
 
 
@@ -83,8 +84,11 @@ class TAO_ScheduleUpdate {
 	public static function register_post_status() {
 		$args = array(
 			'label'                     => _x( self::$TAO_PUBLISH_LABEL, 'Status General Name', 'default' ),
-			'public'                    => true,
-			'exclude_from_search'       => false,
+			'public'                    => false,
+			'internal'                  => true,
+			'publicly_queryable'        => false,
+			'protected'                 => true,
+			'exclude_from_search'       => true,
 			'show_in_admin_all_list'    => true,
 			'show_in_admin_status_list' => true,
 			'label_count'               => _n_noop( self::$TAO_PUBLISH_LABEL . ' <span class="count">(%s)</span>', self::$TAO_PUBLISH_LABEL . ' <span class="count">(%s)</span>', self::$TAO_PUBLISH_TEXTDOMAIN ),
@@ -102,8 +106,10 @@ class TAO_ScheduleUpdate {
 	public static function display_post_states( $states ) {
 		global $post;
 		$arg = get_query_var('post_status');
-
-		$type = self::get_post_types()[$post->post_type];
+		$the_post_types = self::get_post_types();
+		// default states for non public posts
+		if( !isset($the_post_types[$post->post_type]) ) return $states;
+		$type = $the_post_types[$post->post_type];
 
 		if ( $arg != self::$TAO_PUBLISH_LABEL && $post->post_status == self::$TAO_PUBLISH_STATUS ) {
 			$states = array( self::$TAO_PUBLISH_LABEL );
@@ -202,7 +208,7 @@ class TAO_ScheduleUpdate {
 	 * Adds the 'scheduled update'-metabox to the edit-page screen.
 	 *
 	 * @param post $post The post being currently edited
-	 + @see add_meta_box
+	 * @see add_meta_box
 	 * @return void
 	 */
 	public static function add_meta_boxes_page( $post_type, $post ) {
@@ -231,7 +237,7 @@ class TAO_ScheduleUpdate {
 				'elementid' => self::$TAO_PUBLISH_STATUS . '_pubdate',
 				),
 			'text' => array(
-				'save' => __( 'Save' ),
+				'save' => __( 'Save', self::$TAO_PUBLISH_TEXTDOMAIN ),
 			),
 		);
 
@@ -487,6 +493,7 @@ class TAO_ScheduleUpdate {
 		$str = $date->format( 'd.' ) . date_i18n( ' F Y', mktime( 0, 0, 0, $date->format( 'm' ) ) ) . ' - ' . $date->format( 'H:i \U\T\CO' );
 		return $str;
 	}
+
 }
 
 add_action( 'save_post', create_function( '$post_id, $post', 'return TAO_ScheduleUpdate::save_meta( $post_id, $post );' ), 10, 2 );
