@@ -407,7 +407,7 @@ class TAO_ScheduleUpdate {
 		}
 		add_post_meta( $new_post_id, self::$TAO_PUBLISH_STATUS . '_original', $post->ID );//and finally referencing the original post
 
-		return $post->ID;
+		return $new_post_id;
 	}
 
 
