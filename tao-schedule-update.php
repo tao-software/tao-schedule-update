@@ -4,7 +4,7 @@
  * Description: Allows you to plan changes on any post type
  * Author: TAO Software
  * Author URI: http://software.tao.at
- * Version: 1.02
+ * Version: 1.03
  * License: MIT
  */
 
@@ -372,7 +372,7 @@ class TAO_ScheduleUpdate {
 	 * Copies an entire post and sets it's status to 'scheduled update'
 	 *
 	 * @param post $post the post to be copied
-	 * @return void
+	 * @return int - ID of the newly created post
 	 */
 	public static function create_publishing_post( $post ) {
 		#if ($post->post_type != 'page') return;
@@ -406,6 +406,8 @@ class TAO_ScheduleUpdate {
 			}
 		}
 		add_post_meta( $new_post_id, self::$TAO_PUBLISH_STATUS . '_original', $post->ID );//and finally referencing the original post
+
+		return $new_post_id;
 	}
 
 

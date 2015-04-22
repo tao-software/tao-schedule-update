@@ -3,7 +3,7 @@ Contributors: romanweinberger, syberspace
 Donate link: http://software.tao.at/
 Tags: publishing, timing, chron
 Requires at least: 3.7.0
-Tested up to: 4.0
+Tested up to: 4.1.2
 Stable tag: trunk
 License: MIT
 License URI: http://opensource.org/licenses/MIT
@@ -42,6 +42,10 @@ TAO Scheduled change is a really small plugin. It only does one thing, but tries
 == Changelog ==
 
 = 1.03 =
+
+* TAO_ScheduleUpdate::create_publishing_post now returns the created posts's ID
+
+= 1.02.01 =
 
 * fix scheduled posts appearing in search
 * fix problems with l10n textdomain
