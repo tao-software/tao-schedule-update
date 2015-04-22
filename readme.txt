@@ -3,7 +3,7 @@ Contributors: romanweinberger, syberspace
 Donate link: http://software.tao.at/
 Tags: publishing, timing, chron
 Requires at least: 3.7.0
-Tested up to: 4.1.1
+Tested up to: 4.1.2
 Stable tag: trunk
 License: MIT
 License URI: http://opensource.org/licenses/MIT
