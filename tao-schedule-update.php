@@ -175,21 +175,30 @@ class TAO_ScheduleUpdate {
 		if ( 'tao_publish' == $column ) {
 			$stamp = get_post_meta($post_id, self::$TAO_PUBLISH_STATUS . '_pubdate', true);
 
-			if($stamp)
+			if( $stamp ) {
 				echo self::getPubdate($stamp);
+			}
 		}
 	}
 
 
 	/**
 	 * Handles the admin action workflow_copy_to_publish.
+	 * redirects to post edit screen if successful
 	 *
 	 * @return void
 	 */
 	public static function admin_action_workflow_copy_to_publish() {
 		$post = get_post( $_REQUEST['post'] );
-		self::create_publishing_post( $post );
-		wp_redirect( admin_url( 'edit.php?post_type='.$post->post_type ) );
+		$publishing_id = self::create_publishing_post( $post );
+		if ( $publishing_id ) {
+			wp_redirect( admin_url( 'post.php?action=edit&post='.$publishing_id ) );
+		} else {
+			$html  = sprintf( __('Could not schedule %s %s', self::$TAO_PUBLISH_TEXTDOMAIN ), $post->post_type, '<i>'.htmlspecialchars( $post->post_title ).'</i>' );
+			$html .= '<br><br>';
+			$html .= '<a href="' . esc_attr( admin_url( 'edit.php?post_type='.$post->post_type ) ) . '">' . __('Back') . '</a>';
+			wp_die( $html );
+		}
 	}
 
 	/**
@@ -237,7 +246,7 @@ class TAO_ScheduleUpdate {
 				'elementid' => self::$TAO_PUBLISH_STATUS . '_pubdate',
 				),
 			'text' => array(
-				'save' => __( 'Save', self::$TAO_PUBLISH_TEXTDOMAIN ),
+				'save' => __( 'Save' ),
 			),
 		);
 
@@ -375,7 +384,6 @@ class TAO_ScheduleUpdate {
 	 * @return int - ID of the newly created post
 	 */
 	public static function create_publishing_post( $post ) {
-		#if ($post->post_type != 'page') return;
 
 		$new_author = wp_get_current_user();
 
@@ -396,18 +404,59 @@ class TAO_ScheduleUpdate {
 
 		$new_post_id = wp_insert_post( $new_post ); //insert the new post
 
-		$meta_keys = get_post_custom_keys( $post->ID ); //now for copying the metadata to the new post
+		self::copy_meta_and_terms( $post->ID, $new_post_id ); //copy meta and terms over to the new post
 
-		foreach ( $meta_keys as $key ) {
-			$meta_values = get_post_custom_values( $key, $post->ID );
-			foreach ( $meta_values as $value ) {
-				$value = maybe_unserialize( $value );
-				add_post_meta( $new_post_id, $key, $value );
-			}
-		}
 		add_post_meta( $new_post_id, self::$TAO_PUBLISH_STATUS . '_original', $post->ID );//and finally referencing the original post
 
 		return $new_post_id;
+	}
+
+	/**
+	 * copies meta and terms from one post to another
+	 * @param int $source_post_id the post from which to copy
+	 * @param int $destination_post_id the post which will get the meta and terms
+	 * @return void
+	 */
+	public static function copy_meta_and_terms( $source_post_id, $destination_post_id ) {
+
+		$source_post = get_post( $source_post_id );
+		$destination_post = get_post( $destination_post_id );
+
+		//kill it if any of the ids is fishy
+		if( !$source_post || !$destination_post ) return;
+
+		$dest_keys = get_post_custom_keys( $destination_post->ID );
+
+		foreach( $dest_keys as $key ) {
+			delete_post_meta( $destination_post->ID, $key );
+		}
+
+		$meta_keys = get_post_custom_keys( $source_post->ID ); //now for copying the metadata to the new post
+
+		foreach ( $meta_keys as $key ) {
+			$meta_values = get_post_custom_values( $key, $source_post->ID );
+			foreach ( $meta_values as $value ) {
+				$value = maybe_unserialize( $value );
+				add_post_meta( $destination_post->ID, $key, $value );
+			}
+		}
+		
+
+		//and now for copying the terms
+		$taxonomies = get_object_taxonomies( $source_post->post_type );
+		#var_dump($taxonomies);
+		foreach( $taxonomies as $taxonomy ) {
+			$post_terms = wp_get_object_terms( $source_post->ID, $taxonomy, array( 'orderby' => 'term_order' ) );
+			$terms = array();
+			foreach( $post_terms as $term ) {
+				$terms[] = $term->slug;
+			}
+			//reset taxonomy to empty
+			wp_set_object_terms( $destination_post->ID, NULL, $taxonomy );
+			//then add new terms
+			$what = wp_set_object_terms( $destination_post->ID, $terms, $taxonomy );
+		}
+
 	}
 
 
@@ -455,15 +504,7 @@ class TAO_ScheduleUpdate {
 
 		$post = get_post( $post_id );
 
-		$meta_keys = get_post_custom_keys( $post->ID );
-
-		foreach ( $meta_keys as $key ) {
-			$meta_values = get_post_custom_values( $key, $post->ID );
-			foreach ( $meta_values as $value ) {
-				$value = maybe_unserialize( $value );
-				update_post_meta( $orig->ID, $key, $value );
-			}
-		}
+		self::copy_meta_and_terms( $post->ID, $orig->ID );
 
 		$post->ID = $orig->ID;
 		$post->post_name = $orig->post_name;

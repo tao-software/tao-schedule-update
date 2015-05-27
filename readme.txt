@@ -41,6 +41,12 @@ TAO Scheduled change is a really small plugin. It only does one thing, but tries
 
 == Changelog ==
 
+= 1.04 =
+
+* directly go to edit screen after creating a scheduled post
+* terms are now also copied over to the new post
+* fixed bug where multiple meta keys with the same name were not correctly copied back to the original post
+
 = 1.03 =
 
 * TAO_ScheduleUpdate::create_publishing_post now returns the created posts's ID
