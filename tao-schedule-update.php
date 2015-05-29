@@ -4,7 +4,7 @@
  * Description: Allows you to plan changes on any post type
  * Author: TAO Software
  * Author URI: http://software.tao.at
- * Version: 1.03
+ * Version: 1.04
  * License: MIT
  */
 
@@ -13,7 +13,7 @@ class TAO_ScheduleUpdate {
 	protected static $TAO_PUBLISH_LABEL      = 'Scheduled Update';
 	protected static $TAO_PUBLISH_METABOX    = 'Scheduled Update';
 	protected static $TAO_PUBLISH_STATUS     = 'tao_sc_publish';
-	protected static $TAO_PUBLISH_TEXTDOMAIN = 'tao-schedulecchange-td';
+	protected static $TAO_PUBLISH_TEXTDOMAIN = 'tao-scheduleupdate-td';
 
 
 	/**
@@ -137,7 +137,7 @@ class TAO_ScheduleUpdate {
 		if ( $post->post_status == self::$TAO_PUBLISH_STATUS ) {
 			$action = '?action=workflow_publish_now&post=' . $post->ID;
 			$actions['publish_now'] = '<a href="' . admin_url('admin.php' . $action) .'">' . __('Publish Now', self::$TAO_PUBLISH_TEXTDOMAIN) . '</a>';
-		} else {
+		} elseif( $post->post_status != 'trash') {
 			$action = '?action=workflow_copy_to_publish&post=' . $post->ID;
 			$actions['copy_to_publish'] = '<a href="' . admin_url('admin.php' . $action) . '">' . self::$TAO_PUBLISH_LABEL . '</a>';
 		}
@@ -175,21 +175,30 @@ class TAO_ScheduleUpdate {
 		if ( 'tao_publish' == $column ) {
 			$stamp = get_post_meta($post_id, self::$TAO_PUBLISH_STATUS . '_pubdate', true);
 
-			if($stamp)
+			if( $stamp ) {
 				echo self::getPubdate($stamp);
+			}
 		}
 	}
 
 
 	/**
 	 * Handles the admin action workflow_copy_to_publish.
+	 * redirects to post edit screen if successful
 	 *
 	 * @return void
 	 */
 	public static function admin_action_workflow_copy_to_publish() {
 		$post = get_post( $_REQUEST['post'] );
-		self::create_publishing_post( $post );
-		wp_redirect( admin_url( 'edit.php?post_type='.$post->post_type ) );
+		$publishing_id = self::create_publishing_post( $post );
+		if ( $publishing_id ) {
+			wp_redirect( admin_url( 'post.php?action=edit&post='.$publishing_id ) );
+		} else {
+			$html  = sprintf( __('Could not schedule %s %s', self::$TAO_PUBLISH_TEXTDOMAIN ), $post->post_type, '<i>'.htmlspecialchars( $post->post_title ).'</i>' );
+			$html .= '<br><br>';
+			$html .= '<a href="' . esc_attr( admin_url( 'edit.php?post_type='.$post->post_type ) ) . '">' . __('Back') . '</a>';
+			wp_die( $html );
+		}
 	}
 
 	/**
@@ -214,11 +223,11 @@ class TAO_ScheduleUpdate {
 	public static function add_meta_boxes_page( $post_type, $post ) {
 		if($post->post_status != self::$TAO_PUBLISH_STATUS) return;
 
-		//hides everything except the 'veroeffentlichen' button in the 'veroeffentlichen'-metabox
+		//hides everything except the 'publish' button in the 'publish'-metabox
 		echo '<style> #duplicate-action, #delete-action, #minor-publishing-actions, #misc-publishing-actions, #preview-action {display:none;} </style>';
 
 		wp_enqueue_script( 'jquery-ui-datepicker' );
-		$url = "http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/blitzer/jquery-ui.min.css";
+		$url = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/blitzer/jquery-ui.min.css';
 		wp_enqueue_style( 'jquery-ui-blitzer', $url );
 		wp_enqueue_script( self::$TAO_PUBLISH_STATUS . '-datepicker.js', plugins_url( 'js/publish-datepicker.js', __FILE__ ), array( 'jquery-ui-datepicker' ) );
 
@@ -237,7 +246,7 @@ class TAO_ScheduleUpdate {
 				'elementid' => self::$TAO_PUBLISH_STATUS . '_pubdate',
 				),
 			'text' => array(
-				'save' => __( 'Save', self::$TAO_PUBLISH_TEXTDOMAIN ),
+				'save' => __( 'Save' ),
 			),
 		);
 
@@ -309,18 +318,19 @@ class TAO_ScheduleUpdate {
 		$check_zone_info = true;
 
 		// Remove old Etc mappings. Fallback to gmt_offset.
-		if ( false !== strpos( $tzstring, 'Etc/GMT' ) )
-				$tzstring = '';
+		if ( false !== strpos( $tzstring, 'Etc/GMT' ) ) {
+			$tzstring = '';
+		}
 
-			if ( empty( $tzstring ) ) { // Create a UTC+- zone if no timezone string exists
-				$check_zone_info = false;
-				if ( 0 == $current_offset )
-					$tzstring = 'UTC+0';
-				elseif ( $current_offset < 0 )
-					$tzstring = 'UTC' . $current_offset;
-				else
-					$tzstring = 'UTC+' . $current_offset;
-			}
+		if ( empty( $tzstring ) ) { // Create a UTC+- zone if no timezone string exists
+			$check_zone_info = false;
+			if ( 0 == $current_offset )
+				$tzstring = 'UTC+0';
+			elseif ( $current_offset < 0 )
+				$tzstring = 'UTC' . $current_offset;
+			else
+				$tzstring = 'UTC+' . $current_offset;
+		}
 
 		return $tzstring;
 	}
@@ -347,6 +357,8 @@ class TAO_ScheduleUpdate {
 	 * Prevents scheduled updates to switch to other post states.
 	 *
 	 * Prevents post with the state 'scheduled update' to switch to published after being saved
+	 * clears cron hook if post is trashed
+	 * restores cron hook if post us un-trashed
 	 *
 	 * @param string $new_status the post's new status
 	 * @param string $old_status the post's old status
@@ -375,11 +387,11 @@ class TAO_ScheduleUpdate {
 	 * @return int - ID of the newly created post
 	 */
 	public static function create_publishing_post( $post ) {
-		#if ($post->post_type != 'page') return;
 
 		$new_author = wp_get_current_user();
 
-		$new_post = array( //create the new post
+		//create the new post
+		$new_post = array(
 			'menu_order'     => $post->menu_order,
 			'comment_status' => $post->comment_status,
 			'ping_status'    => $post->ping_status,
@@ -391,23 +403,66 @@ class TAO_ScheduleUpdate {
 			'post_password'  => $post->post_password,
 			'post_status'    => self::$TAO_PUBLISH_STATUS,
 			'post_title'     => $post->post_title,
-			'post_type'      => $post->post_type
+			'post_type'      => $post->post_type,
 		);
 
-		$new_post_id = wp_insert_post( $new_post ); //insert the new post
+		//insert the new post
+		$new_post_id = wp_insert_post( $new_post );
 
-		$meta_keys = get_post_custom_keys( $post->ID ); //now for copying the metadata to the new post
+		//copy meta and terms over to the new post
+		self::copy_meta_and_terms( $post->ID, $new_post_id );
 
-		foreach ( $meta_keys as $key ) {
-			$meta_values = get_post_custom_values( $key, $post->ID );
-			foreach ( $meta_values as $value ) {
-				$value = maybe_unserialize( $value );
-				add_post_meta( $new_post_id, $key, $value );
-			}
-		}
-		add_post_meta( $new_post_id, self::$TAO_PUBLISH_STATUS . '_original', $post->ID );//and finally referencing the original post
+		//and finally referencing the original post
+		add_post_meta( $new_post_id, self::$TAO_PUBLISH_STATUS . '_original', $post->ID );
 
 		return $new_post_id;
+	}
+
+	/**
+	 * copies meta and terms from one post to another
+	 * @param int $source_post_id the post from which to copy
+	 * @param int $destination_post_id the post which will get the meta and terms
+	 * @return void
+	 */
+	public static function copy_meta_and_terms( $source_post_id, $destination_post_id ) {
+
+		$source_post = get_post( $source_post_id );
+		$destination_post = get_post( $destination_post_id );
+
+		//abort if any of the ids is not a post
+		if( !$source_post || !$destination_post ) return;
+
+		//remove all meta from the destination, 
+		$dest_keys = get_post_custom_keys( $destination_post->ID );
+		foreach( $dest_keys as $key ) {
+			delete_post_meta( $destination_post->ID, $key );
+		}
+
+		//now for copying the metadata to the new post
+		$meta_keys = get_post_custom_keys( $source_post->ID ); 
+		foreach ( $meta_keys as $key ) {
+			$meta_values = get_post_custom_values( $key, $source_post->ID );
+			foreach ( $meta_values as $value ) {
+				$value = maybe_unserialize( $value );
+				add_post_meta( $destination_post->ID, $key, $value );
+			}
+		}
+		
+
+		//and now for copying the terms
+		$taxonomies = get_object_taxonomies( $source_post->post_type );
+		foreach( $taxonomies as $taxonomy ) {
+			$post_terms = wp_get_object_terms( $source_post->ID, $taxonomy, array( 'orderby' => 'term_order' ) );
+			$terms = array();
+			foreach( $post_terms as $term ) {
+				$terms[] = $term->slug;
+			}
+			//reset taxonomy to empty
+			wp_set_object_terms( $destination_post->ID, NULL, $taxonomy );
+			//then add new terms
+			$what = wp_set_object_terms( $destination_post->ID, $terms, $taxonomy );
+		}
+
 	}
 
 
@@ -455,15 +510,7 @@ class TAO_ScheduleUpdate {
 
 		$post = get_post( $post_id );
 
-		$meta_keys = get_post_custom_keys( $post->ID );
-
-		foreach ( $meta_keys as $key ) {
-			$meta_values = get_post_custom_values( $key, $post->ID );
-			foreach ( $meta_values as $value ) {
-				$value = maybe_unserialize( $value );
-				update_post_meta( $orig->ID, $key, $value );
-			}
-		}
+		self::copy_meta_and_terms( $post->ID, $orig->ID );
 
 		$post->ID = $orig->ID;
 		$post->post_name = $orig->post_name;
