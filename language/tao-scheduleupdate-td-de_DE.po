@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: TAO Schedule Update v1.02\n"
+"Project-Id-Version: TAO Schedule Update v1.04\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-04-08 10:30+0200\n"
-"PO-Revision-Date: 2014-11-19 07:48:25+0000\n"
+"PO-Revision-Date: 2015-05-29 07:59:53+0000\n"
 "Last-Translator: TAO Software <software@tao.at>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -32,19 +32,19 @@ msgid "Publish Now"
 msgstr "Jetzt Veröffentlichen"
 
 #: tao-schedule-update.php:159
-#: tao-schedule-update.php:268
-#: tao-schedule-update.php:270
+#: tao-schedule-update.php:277
+#: tao-schedule-update.php:279
 #@ tao-scheduleupdate-td
 msgid "Releasedate"
 msgstr "Veröffentlichungsdatum"
 
-#: tao-schedule-update.php:273
-#: tao-schedule-update.php:275
+#: tao-schedule-update.php:282
+#: tao-schedule-update.php:284
 #@ tao-scheduleupdate-td
 msgid "Time"
 msgstr "Zeit"
 
-#: tao-schedule-update.php:287
+#: tao-schedule-update.php:296
 #, php-format
 #@ tao-scheduleupdate-td
 msgid "Please enter <i>Time</i> as %s"
@@ -55,13 +55,24 @@ msgstr "Ihre Zeitzone ist %s"
 msgid "Original"
 msgstr "Original"
 
-#: tao-schedule-update.php:240
-#@ tao-scheduleupdate-td
+#: tao-schedule-update.php:249
+#@ default
 msgid "Save"
 msgstr "Speichern"
 
-#: tao-schedule-update.php:290
+#: tao-schedule-update.php:299
 #@ tao-scheduleupdate-td
 msgid "The Releasedate is in the past, this post will be published 5 Minutes from now."
 msgstr "Das Veröffentlichungsdatum liegt in der Vergangenheit, dieser Post wird in 5 Minuten veröffentlicht."
+
+#: tao-schedule-update.php:197
+#, php-format
+#@ tao-scheduleupdate-td
+msgid "Could not schedule %s %s"
+msgstr "%s %s konnte nicht als Geplante Änderung angelegt werden"
+
+#: tao-schedule-update.php:199
+#@ default
+msgid "Back"
+msgstr "Zurück"
 

@@ -4,7 +4,7 @@
  * Description: Allows you to plan changes on any post type
  * Author: TAO Software
  * Author URI: http://software.tao.at
- * Version: 1.03
+ * Version: 1.04
  * License: MIT
  */
 
@@ -13,7 +13,7 @@ class TAO_ScheduleUpdate {
 	protected static $TAO_PUBLISH_LABEL      = 'Scheduled Update';
 	protected static $TAO_PUBLISH_METABOX    = 'Scheduled Update';
 	protected static $TAO_PUBLISH_STATUS     = 'tao_sc_publish';
-	protected static $TAO_PUBLISH_TEXTDOMAIN = 'tao-schedulecchange-td';
+	protected static $TAO_PUBLISH_TEXTDOMAIN = 'tao-scheduleupdate-td';
 
 
 	/**
@@ -137,7 +137,7 @@ class TAO_ScheduleUpdate {
 		if ( $post->post_status == self::$TAO_PUBLISH_STATUS ) {
 			$action = '?action=workflow_publish_now&post=' . $post->ID;
 			$actions['publish_now'] = '<a href="' . admin_url('admin.php' . $action) .'">' . __('Publish Now', self::$TAO_PUBLISH_TEXTDOMAIN) . '</a>';
-		} else {
+		} elseif( $post->post_status != 'trash') {
 			$action = '?action=workflow_copy_to_publish&post=' . $post->ID;
 			$actions['copy_to_publish'] = '<a href="' . admin_url('admin.php' . $action) . '">' . self::$TAO_PUBLISH_LABEL . '</a>';
 		}
@@ -223,11 +223,11 @@ class TAO_ScheduleUpdate {
 	public static function add_meta_boxes_page( $post_type, $post ) {
 		if($post->post_status != self::$TAO_PUBLISH_STATUS) return;
 
-		//hides everything except the 'veroeffentlichen' button in the 'veroeffentlichen'-metabox
+		//hides everything except the 'publish' button in the 'publish'-metabox
 		echo '<style> #duplicate-action, #delete-action, #minor-publishing-actions, #misc-publishing-actions, #preview-action {display:none;} </style>';
 
 		wp_enqueue_script( 'jquery-ui-datepicker' );
-		$url = "http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/blitzer/jquery-ui.min.css";
+		$url = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/blitzer/jquery-ui.min.css';
 		wp_enqueue_style( 'jquery-ui-blitzer', $url );
 		wp_enqueue_script( self::$TAO_PUBLISH_STATUS . '-datepicker.js', plugins_url( 'js/publish-datepicker.js', __FILE__ ), array( 'jquery-ui-datepicker' ) );
 
@@ -318,18 +318,19 @@ class TAO_ScheduleUpdate {
 		$check_zone_info = true;
 
 		// Remove old Etc mappings. Fallback to gmt_offset.
-		if ( false !== strpos( $tzstring, 'Etc/GMT' ) )
-				$tzstring = '';
+		if ( false !== strpos( $tzstring, 'Etc/GMT' ) ) {
+			$tzstring = '';
+		}
 
-			if ( empty( $tzstring ) ) { // Create a UTC+- zone if no timezone string exists
-				$check_zone_info = false;
-				if ( 0 == $current_offset )
-					$tzstring = 'UTC+0';
-				elseif ( $current_offset < 0 )
-					$tzstring = 'UTC' . $current_offset;
-				else
-					$tzstring = 'UTC+' . $current_offset;
-			}
+		if ( empty( $tzstring ) ) { // Create a UTC+- zone if no timezone string exists
+			$check_zone_info = false;
+			if ( 0 == $current_offset )
+				$tzstring = 'UTC+0';
+			elseif ( $current_offset < 0 )
+				$tzstring = 'UTC' . $current_offset;
+			else
+				$tzstring = 'UTC+' . $current_offset;
+		}
 
 		return $tzstring;
 	}
@@ -356,6 +357,8 @@ class TAO_ScheduleUpdate {
 	 * Prevents scheduled updates to switch to other post states.
 	 *
 	 * Prevents post with the state 'scheduled update' to switch to published after being saved
+	 * clears cron hook if post is trashed
+	 * restores cron hook if post us un-trashed
 	 *
 	 * @param string $new_status the post's new status
 	 * @param string $old_status the post's old status
@@ -387,7 +390,8 @@ class TAO_ScheduleUpdate {
 
 		$new_author = wp_get_current_user();
 
-		$new_post = array( //create the new post
+		//create the new post
+		$new_post = array(
 			'menu_order'     => $post->menu_order,
 			'comment_status' => $post->comment_status,
 			'ping_status'    => $post->ping_status,
@@ -399,14 +403,17 @@ class TAO_ScheduleUpdate {
 			'post_password'  => $post->post_password,
 			'post_status'    => self::$TAO_PUBLISH_STATUS,
 			'post_title'     => $post->post_title,
-			'post_type'      => $post->post_type
+			'post_type'      => $post->post_type,
 		);
 
-		$new_post_id = wp_insert_post( $new_post ); //insert the new post
+		//insert the new post
+		$new_post_id = wp_insert_post( $new_post );
 
-		self::copy_meta_and_terms( $post->ID, $new_post_id ); //copy meta and terms over to the new post
+		//copy meta and terms over to the new post
+		self::copy_meta_and_terms( $post->ID, $new_post_id );
 
-		add_post_meta( $new_post_id, self::$TAO_PUBLISH_STATUS . '_original', $post->ID );//and finally referencing the original post
+		//and finally referencing the original post
+		add_post_meta( $new_post_id, self::$TAO_PUBLISH_STATUS . '_original', $post->ID );
 
 		return $new_post_id;
 	}
@@ -422,17 +429,17 @@ class TAO_ScheduleUpdate {
 		$source_post = get_post( $source_post_id );
 		$destination_post = get_post( $destination_post_id );
 
-		//kill it if any of the ids is fishy
+		//abort if any of the ids is not a post
 		if( !$source_post || !$destination_post ) return;
 
+		//remove all meta from the destination, 
 		$dest_keys = get_post_custom_keys( $destination_post->ID );
-
 		foreach( $dest_keys as $key ) {
 			delete_post_meta( $destination_post->ID, $key );
 		}
 
-		$meta_keys = get_post_custom_keys( $source_post->ID ); //now for copying the metadata to the new post
-
+		//now for copying the metadata to the new post
+		$meta_keys = get_post_custom_keys( $source_post->ID ); 
 		foreach ( $meta_keys as $key ) {
 			$meta_values = get_post_custom_values( $key, $source_post->ID );
 			foreach ( $meta_values as $value ) {
@@ -444,7 +451,6 @@ class TAO_ScheduleUpdate {
 
 		//and now for copying the terms
 		$taxonomies = get_object_taxonomies( $source_post->post_type );
-		#var_dump($taxonomies);
 		foreach( $taxonomies as $taxonomy ) {
 			$post_terms = wp_get_object_terms( $source_post->ID, $taxonomy, array( 'orderby' => 'term_order' ) );
 			$terms = array();
