@@ -439,7 +439,7 @@ class TAO_ScheduleUpdate {
 		}
 
 		//now for copying the metadata to the new post
-		$meta_keys = get_post_custom_keys( $source_post->ID ); 
+		$meta_keys = get_post_custom_keys( $source_post->ID ) ?: array(); 
 		foreach ( $meta_keys as $key ) {
 			$meta_values = get_post_custom_values( $key, $source_post->ID );
 			foreach ( $meta_values as $value ) {
@@ -506,7 +506,14 @@ class TAO_ScheduleUpdate {
 	 * @return int the original post's id
 	 */
 	public static function publish_post( $post_id ) {
-		$orig = get_post( get_post_meta( $post_id, self::$TAO_PUBLISH_STATUS . '_original', true ) );
+
+		$orig_id = get_post_meta( $post_id, self::$TAO_PUBLISH_STATUS . '_original', true );
+		//break early if given post is not an actual scheduled post created by this plugin
+		if( !$orig_id ) {
+			return $post_id;
+		}
+
+		$orig = get_post( $orig_id );
 
 		$post = get_post( $post_id );
 
