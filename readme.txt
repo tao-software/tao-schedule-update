@@ -42,6 +42,10 @@ TAO Scheduled change is a really small plugin. It only does one thing, but tries
 
 == Changelog ==
 
+= 1.04.01 =
+* fix bug where publishing a post overrides other content
+* fix potential breakeage when cloning a post without meta infos
+
 = 1.04 =
 
 * directly go to edit screen after creating a scheduled post
