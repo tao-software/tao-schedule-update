@@ -3,7 +3,7 @@ Contributors: romanweinberger, syberspace
 Donate link: http://software.tao.at/
 Tags: publishing, timing, cron, schedule, unattended
 Requires at least: 3.7.0
-Tested up to: 4.2.2
+Tested up to: 4.3
 Stable tag: trunk
 License: MIT
 License URI: http://opensource.org/licenses/MIT
@@ -41,6 +41,9 @@ TAO Scheduled change is a really small plugin. It only does one thing, but tries
 1. The Plugin in Action
 
 == Changelog ==
+
+= 1.05 =
+* fix bug where kses filters would run on automatically published posts
 
 = 1.04.01 =
 * fix bug where publishing a post overrides other content

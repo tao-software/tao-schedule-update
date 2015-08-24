@@ -4,7 +4,7 @@
  * Description: Allows you to plan changes on any post type
  * Author: TAO Software
  * Author URI: http://software.tao.at
- * Version: 1.04.01
+ * Version: 1.05
  * License: MIT
  */
 
@@ -535,6 +535,19 @@ class TAO_ScheduleUpdate {
 		return $orig->ID;
 	}
 
+	/**
+	 * Wrapper function for cron automated publishing
+	 * disables the kses filters before and reenables them after the post has been published
+	 *
+	 * @param int $post_id the post's id
+	 * @return void
+	 */
+	public static function cron_publish_post( $post_id ) {
+		kses_remove_filters();
+		self::publish_post( $post_id );
+		kses_init_filters();
+	}
+
 
 	/**
 	 * Reformats a timestamp into human readable publishing date and time
@@ -553,7 +566,7 @@ class TAO_ScheduleUpdate {
 }
 
 add_action( 'save_post', create_function( '$post_id, $post', 'return TAO_ScheduleUpdate::save_meta( $post_id, $post );' ), 10, 2 );
-add_action( 'tao_publish_post', create_function( '$post_id', 'return TAO_ScheduleUpdate::publish_post( $post_id );' ) );
+add_action( 'tao_publish_post', create_function( '$post_id', 'return TAO_ScheduleUpdate::cron_publish_post( $post_id );' ) );
 
 add_action( 'wp_ajax_load_pubdate', create_function( '', 'return TAO_ScheduleUpdate::load_pubdate();' ) );
 add_action( 'init', create_function( '', 'return TAO_ScheduleUpdate::init();' ) );
