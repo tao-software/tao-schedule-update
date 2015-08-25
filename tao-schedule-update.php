@@ -432,8 +432,10 @@ class TAO_ScheduleUpdate {
 		//abort if any of the ids is not a post
 		if( !$source_post || !$destination_post ) return;
 
-		//remove all meta from the destination, 
-		$dest_keys = get_post_custom_keys( $destination_post->ID );
+		/* remove all meta from the destination, 
+		 * initialize to emptyarray if not set to prevent error in foreach loop
+		 */
+		$dest_keys = get_post_custom_keys( $destination_post->ID ) ?: array();
 		foreach( $dest_keys as $key ) {
 			delete_post_meta( $destination_post->ID, $key );
 		}
