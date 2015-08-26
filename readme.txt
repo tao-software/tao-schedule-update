@@ -43,10 +43,12 @@ TAO Scheduled change is a really small plugin. It only does one thing, but tries
 == Changelog ==
 
 = 1.05 =
+
 * fix bug where kses filters would run on automatically published posts
-* add check for empty array in copy_meta_and_terms function. 
+* add check for empty array in copy_meta_and_terms function.
 
 = 1.04.01 =
+
 * fix bug where publishing a post overrides other content
 * fix potential breakeage when cloning a post without meta infos
 
