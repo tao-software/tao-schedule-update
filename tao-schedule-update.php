@@ -420,8 +420,6 @@ class TAO_ScheduleUpdate {
 		/**
 		 * Fires when a post has been duplicated.
 		 *
-		 * @since 2.3.0
-		 *
 		 * @param int  $new_post_id ID of the newly created post.
 		 */
 		do_action( 'TAO_ScheduleUpdate\\create_publishing_post', $new_post_id );
