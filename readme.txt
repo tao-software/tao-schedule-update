@@ -45,6 +45,7 @@ TAO Scheduled change is a really small plugin. It only does one thing, but tries
 = 1.06 =
 
 * add action TAO_ScheduleUpdate\\create_publishing_post (thanks to ollietreend)
+* add Japanese language files (thanks to yokotak0527)
 
 = 1.05 =
 
