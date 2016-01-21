@@ -4,7 +4,7 @@
  * Description: Allows you to plan changes on any post type
  * Author: TAO Software
  * Author URI: http://software.tao.at
- * Version: 1.05
+ * Version: 1.06
  * License: MIT
  */
 
@@ -366,6 +366,8 @@ class TAO_ScheduleUpdate {
 	 * @return void
 	 */
 	public static function prevent_status_change ( $new_status, $old_status, $post ) {
+		if ($new_status === $old_status && $new_status == self::$TAO_PUBLISH_STATUS) return;
+
 		if ( $old_status == self::$TAO_PUBLISH_STATUS && 'trash' != $new_status ) {
 			remove_action( 'save_post', create_function( '$post_id, $post', 'return TAO_ScheduleUpdate::save_meta( $post_id, $post );' ), 10 );
 
@@ -414,6 +416,13 @@ class TAO_ScheduleUpdate {
 
 		//and finally referencing the original post
 		add_post_meta( $new_post_id, self::$TAO_PUBLISH_STATUS . '_original', $post->ID );
+
+		/**
+		 * Fires when a post has been duplicated.
+		 *
+		 * @param int  $new_post_id ID of the newly created post.
+		 */
+		do_action( 'TAO_ScheduleUpdate\\create_publishing_post', $new_post_id );
 
 		return $new_post_id;
 	}
