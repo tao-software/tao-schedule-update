@@ -535,7 +535,9 @@ class TAO_ScheduleUpdate {
 		$post->guid = $orig->guid;
 		$post->post_parent = $orig->post_parent;
 		$post->post_status = $orig->post_status;
-		$post->post_date = date_i18n( 'Y-m-d H:i:s' ); //we need this to get wp to recognize this as a newly updated post
+		$post_date = date_i18n( 'Y-m-d H:i:s' );
+		$post->post_date = $post_date; //we need this to get wp to recognize this as a newly updated post
+		$post->post_date_gmt = get_gmt_from_date($post_date);
 
 		delete_post_meta( $orig->ID, self::$TAO_PUBLISH_STATUS . '_original' );
 		delete_post_meta( $orig->ID, self::$TAO_PUBLISH_STATUS . '_pubdate' );
