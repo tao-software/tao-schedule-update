@@ -582,7 +582,7 @@ add_action( 'save_post', create_function( '$post_id, $post', 'return TAO_Schedul
 add_action( 'tao_publish_post', create_function( '$post_id', 'return TAO_ScheduleUpdate::cron_publish_post( $post_id );' ) );
 
 add_action( 'wp_ajax_load_pubdate', create_function( '', 'return TAO_ScheduleUpdate::load_pubdate();' ) );
-add_action( 'init', create_function( '', 'return TAO_ScheduleUpdate::init();' ) );
+add_action( 'init', create_function( '', 'return TAO_ScheduleUpdate::init();' ), PHP_INT_MAX );
 add_action( 'admin_action_workflow_copy_to_publish', create_function( '', 'return TAO_ScheduleUpdate::admin_action_workflow_copy_to_publish();' ) );
 add_action( 'admin_action_workflow_publish_now', create_function( '', 'return TAO_ScheduleUpdate::admin_action_workflow_publish_now();' ) );
 add_action( 'transition_post_status', create_function( '$new_status, $old_status, $post', 'return TAO_ScheduleUpdate::prevent_status_change( $new_status, $old_status, $post );' ), 10, 3 );
