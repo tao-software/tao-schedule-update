@@ -155,10 +155,10 @@ class TAO_ScheduleUpdate {
 	public static function manage_pages_columns( $columns ) {
 		$new = array();
 		foreach ( $columns as $key => $val ) {
-			if ( 'author' == $key ) {
+			$new[$key] = $val;
+			if ( 'title' == $key ) {
 				$new['tao_publish'] = __( 'Releasedate', self::$TAO_PUBLISH_TEXTDOMAIN );
 			}
-			$new[$key] = $val;
 		}
 		return $new;
 	}
