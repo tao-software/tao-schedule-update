@@ -47,6 +47,11 @@ This is just a little side project I am maintaining as time permits. If you find
 
 == Changelog ==
 
+= 1.08 =
+
+* fix issue where releasedate would not display for post types that do not support authorship
+* fix issue where other plugins register posttypes after tao-schedule-update initializes
+
 = 1.07 =
 
 * fix issue where gmt post dates where not updated correctly (thanks to CheeseDurger)
