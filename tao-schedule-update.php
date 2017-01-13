@@ -142,12 +142,15 @@ class TAO_ScheduleUpdate {
 	 * @return array Array of available actions for the given post
 	 */
 	public static function page_row_actions( $actions, $post ) {
+		$copy = '?action=workflow_copy_to_publish&post=' . $post->ID;
 		if ( $post->post_status == self::$TAO_PUBLISH_STATUS ) {
 			$action = '?action=workflow_publish_now&post=' . $post->ID;
 			$actions['publish_now'] = '<a href="' . admin_url( 'admin.php' . $action ) .'">' . __( 'Publish Now', self::$TAO_PUBLISH_TEXTDOMAIN ) . '</a>';
+			if ( TAO_ScheduleUpdate_Options::get( 'tsu_recursive' ) ) {
+				$actions['copy_to_publish'] = '<a href="' . admin_url( 'admin.php' . $copy ) . '">'.__( 'Schedule recursive', self::$TAO_PUBLISH_TEXTDOMAIN ).'</a>';
+			}
 		} elseif ( $post->post_status != 'trash' ) {
-			$action = '?action=workflow_copy_to_publish&post=' . $post->ID;
-			$actions['copy_to_publish'] = '<a href="' . admin_url( 'admin.php' . $action ) . '">' . self::$TAO_PUBLISH_LABEL . '</a>';
+			$actions['copy_to_publish'] = '<a href="' . admin_url( 'admin.php' . $copy ) . '">' . self::$TAO_PUBLISH_LABEL . '</a>';
 		}
 
 		return $actions;
@@ -413,6 +416,11 @@ class TAO_ScheduleUpdate {
 
 		$new_author = wp_get_current_user();
 
+		$parent = $post->ID;
+		if( $post->post_status == self::$TAO_PUBLISH_STATUS ) {
+			$post = get_post_meta(self::$TAO_PUBLISH_STATUS . '_original', $post->ID, true);
+		}
+
 		//create the new post
 		$new_post = array(
 			'menu_order'     => $post->menu_order,
@@ -422,7 +430,7 @@ class TAO_ScheduleUpdate {
 			'post_content'   => $post->post_content,
 			'post_excerpt'   => $post->post_excerpt,
 			'post_mime_type' => $post->mime_type,
-			'post_parent'    => $post->ID,
+			'post_parent'    => $parent,
 			'post_password'  => $post->post_password,
 			'post_status'    => self::$TAO_PUBLISH_STATUS,
 			'post_title'     => $post->post_title,

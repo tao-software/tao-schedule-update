@@ -5,9 +5,6 @@ class TAO_ScheduleUpdate_Options {
 	protected static $TAO_PUBLISH_OPTIONS = array();
 
 	public static function init() {
-
-		self::$TAO_PUBLISH_OPTIONS = get_option( 'tsu_options' );
-
 		register_setting( 'tao_schedule_update', 'tsu_options' );
 
 		add_settings_section(
@@ -40,10 +37,26 @@ class TAO_ScheduleUpdate_Options {
 				'class'     => 'tsu_row',
 			)
 		);
+
+		add_settings_field(
+			'tsu_field_recursive',
+			__( 'Recursive scheduling', TAO_ScheduleUpdate::$TAO_PUBLISH_TEXTDOMAIN ),
+			array( __CLASS__, 'field_recursive_cb' ),
+			'tsu',
+			'tsu_section',
+			array(
+				'label_for' => 'tsu_recursive',
+				'class'     => 'tsu_row',
+			)
+		);
+	}
+
+	public static function load_options() {
+		self::$TAO_PUBLISH_OPTIONS = get_option( 'tsu_options' );
 	}
 
 	public static function get( $optname ) {
-		if( isset(self::$TAO_PUBLISH_OPTIONS[$optname])) {
+		if ( isset( self::$TAO_PUBLISH_OPTIONS[$optname] ) ) {
 			return self::$TAO_PUBLISH_OPTIONS[$optname];
 		}
 		return null;
@@ -61,18 +74,16 @@ class TAO_ScheduleUpdate_Options {
 	}
 
 	public static function field_nodate_cb( $args ) {
-		// get the value of the setting we've registered with register_setting()
 		$options = get_option( 'tsu_options' );
-		// output the field
 ?>
 		<select id="<?php echo esc_attr( $args['label_for'] ); ?>"
 		        name="tsu_options[<?php echo esc_attr( $args['label_for'] ); ?>]"
 		>
-			<option value="publish" <?php echo isset( $ptions[$args[ 'label_for']] ) ? ( selected( $options[$args[ 'label_for']], 'publish', false ) ) : ( '' ); ?>>
-				<?php echo esc_html( __('Publish right away', TAO_ScheduleUpdate::$TAO_PUBLISH_TEXTDOMAIN) ); ?>
+			<option value="publish" <?php echo isset( $options[$args[ 'label_for']] ) ? ( selected( $options[$args[ 'label_for']], 'publish', false ) ) : ( '' ); ?>>
+				<?php echo esc_html( __( 'Publish right away', TAO_ScheduleUpdate::$TAO_PUBLISH_TEXTDOMAIN ) ); ?>
 			</option>
 			<option value="nothing" <?php echo isset( $options[$args[ 'label_for']] ) ? ( selected( $options[$args[ 'label_for']], 'nothing', false ) ) : ( '' ); ?>>
-				<?php echo esc_html( __('Don\'t publish', TAO_ScheduleUpdate::$TAO_PUBLISH_TEXTDOMAIN) ); ?>
+				<?php echo esc_html( __( 'Don\'t publish', TAO_ScheduleUpdate::$TAO_PUBLISH_TEXTDOMAIN ) ); ?>
 			</option>
 		</select>
 		<p class="description">
@@ -83,9 +94,8 @@ class TAO_ScheduleUpdate_Options {
 	}
 
 	public static function field_visible_cb( $args ) {
-		// get the value of the setting we've registered with register_setting()
 		$options = get_option( 'tsu_options' );
-		// output the field
+
 		$checked = '';
 		if ( isset( $options[ $args['label_for']] ) ) {
 			$checked = 'checked="checked"';
@@ -98,6 +108,25 @@ class TAO_ScheduleUpdate_Options {
 			       <?php echo $checked ?>
 			>
 			<?php echo esc_html( __( 'Scheduled posts are visible for anonymous users in the frontend', TAO_ScheduleUpdate::$TAO_PUBLISH_TEXTDOMAIN ) ); ?>
+		</label>
+		<?php
+	}
+
+	public static function field_recursive_cb( $args ) {
+		$options = get_option( 'tsu_options' );
+
+		$checked = '';
+		if ( isset( $options[ $args['label_for']] ) ) {
+			$checked = 'checked="checked"';
+		}
+?>
+		<label for="<?php echo esc_attr( $args['label_for'] ); ?>">
+			<input id="<?php echo esc_attr( $args['label_for'] ); ?>"
+			       type="checkbox"
+			       name="tsu_options[<?php echo esc_attr( $args['label_for'] ); ?>]"
+			       <?php echo $checked ?>
+			>
+			<?php echo esc_html( __( 'Allow recursive scheduling', TAO_ScheduleUpdate::$TAO_PUBLISH_TEXTDOMAIN ) ); ?>
 		</label>
 		<?php
 	}
@@ -128,3 +157,5 @@ class TAO_ScheduleUpdate_Options {
 
 add_action( 'admin_init', create_function( '', 'return TAO_ScheduleUpdate_Options::init();' ) );
 add_action( 'admin_menu', create_function( '', 'return TAO_ScheduleUpdate_Options::options_page();' ) );
+//since this file gets included inside a `init` callback we can just call this function straight out
+TAO_ScheduleUpdate_Options::load_options();
