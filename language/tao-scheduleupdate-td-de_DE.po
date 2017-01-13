@@ -2,77 +2,101 @@ msgid ""
 msgstr ""
 "Project-Id-Version: TAO Schedule Update v1.04\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-08 10:30+0200\n"
-"PO-Revision-Date: 2015-05-29 07:59:53+0000\n"
+"POT-Creation-Date: 2017-01-13 16:08+0100\n"
+"PO-Revision-Date: 2017-01-13 16:08+0100\n"
 "Last-Translator: TAO Software <software@tao.at>\n"
 "Language-Team: \n"
+"Language: de_DE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: CSL v1.x\n"
-"X-Poedit-Language: German\n"
-"X-Poedit-Country: GERMANY\n"
-"X-Poedit-SourceCharset: utf-8\n"
-"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2;\n"
-"X-Poedit-Basepath: \n"
-"X-Poedit-Bookmarks: \n"
+"X-Generator: Poedit 1.8.7.1\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;"
+"_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2\n"
+"X-Poedit-Basepath: ..\n"
+"X-Textdomain-Support: yes\n"
 "X-Poedit-SearchPath-0: .\n"
-"X-Textdomain-Support: yes"
 
-#: tao-schedule-update.php:29
-#: tao-schedule-update.php:30
-#@ tao-scheduleupdate-td
+#: options.php:22
+msgid "No Date Set"
+msgstr "Kein Datum gesetzt"
+
+#: options.php:34
+msgid "Posts Visible"
+msgstr "Posts sichtbar"
+
+#: options.php:72
+msgid "Publish right away"
+msgstr "Sofort veröffentlichen"
+
+#: options.php:75
+msgid "Don't publish"
+msgstr "Nicht veröffentlichen"
+
+#: options.php:79
+msgid "What should happen to a post if it is saved with no date set?"
+msgstr "Was soll mit Posts ohne Veröffentlichungsdatum geschehen?"
+
+#: options.php:100
+msgid "Scheduled posts are visible for anonymous users in the frontend"
+msgstr "Geplante Posts sind für anonyme Benutzer sichtbar"
+
+#: tao-schedule-update.php:33 tao-schedule-update.php:34
 msgid "Scheduled Update"
 msgstr "Geplante Änderung"
 
-#: tao-schedule-update.php:139
-#@ tao-scheduleupdate-td
-msgid "Publish Now"
-msgstr "Jetzt Veröffentlichen"
-
-#: tao-schedule-update.php:159
-#: tao-schedule-update.php:277
-#: tao-schedule-update.php:279
-#@ tao-scheduleupdate-td
-msgid "Releasedate"
-msgstr "Veröffentlichungsdatum"
-
-#: tao-schedule-update.php:282
-#: tao-schedule-update.php:284
-#@ tao-scheduleupdate-td
-msgid "Time"
-msgstr "Zeit"
-
-#: tao-schedule-update.php:296
+#: tao-schedule-update.php:102
 #, php-format
-#@ tao-scheduleupdate-td
-msgid "Please enter <i>Time</i> as %s"
-msgstr "Ihre Zeitzone ist %s"
+msgid " <span class=\"count\">(%s)</span>"
+msgid_plural " <span class=\"count\">(%s)</span>"
+msgstr[0] ""
+msgstr[1] ""
 
-#: tao-schedule-update.php:118
-#@ tao-scheduleupdate-td
+#: tao-schedule-update.php:126
 msgid "Original"
 msgstr "Original"
 
-#: tao-schedule-update.php:249
-#@ default
-msgid "Save"
-msgstr "Speichern"
+#: tao-schedule-update.php:147
+msgid "Publish Now"
+msgstr "Jetzt Veröffentlichen"
 
-#: tao-schedule-update.php:299
-#@ tao-scheduleupdate-td
-msgid "The Releasedate is in the past, this post will be published 5 Minutes from now."
-msgstr "Das Veröffentlichungsdatum liegt in der Vergangenheit, dieser Post wird in 5 Minuten veröffentlicht."
+#: tao-schedule-update.php:168 tao-schedule-update.php:289
+#: tao-schedule-update.php:291
+msgid "Releasedate"
+msgstr "Veröffentlichungsdatum"
 
-#: tao-schedule-update.php:197
+#: tao-schedule-update.php:205
 #, php-format
-#@ tao-scheduleupdate-td
 msgid "Could not schedule %s %s"
 msgstr "%s %s konnte nicht als Geplante Änderung angelegt werden"
 
-#: tao-schedule-update.php:199
-#@ default
+#: tao-schedule-update.php:207
 msgid "Back"
 msgstr "Zurück"
 
+#: tao-schedule-update.php:257
+msgid "Save"
+msgstr "Speichern"
+
+#: tao-schedule-update.php:294 tao-schedule-update.php:296
+msgid "Time"
+msgstr "Zeit"
+
+#: tao-schedule-update.php:308
+#, php-format
+msgid "Please enter <i>Time</i> as %s"
+msgstr "Ihre Zeitzone ist %s"
+
+#: tao-schedule-update.php:313
+msgid "The releasedate is in the past."
+msgstr "Das Veröffentlichungsdatum liegt in der Vergangenheit."
+
+#: tao-schedule-update.php:315
+msgid "This post will no be published."
+msgstr "Dieser Post wird nicht veröffentlicht."
+
+#: tao-schedule-update.php:317
+msgid "This post will be published 5 minutes from now."
+msgstr "Dieser Post wird in 5 Minuten veröffentlicht."

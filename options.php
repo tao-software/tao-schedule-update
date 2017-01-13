@@ -69,10 +69,10 @@ class TAO_ScheduleUpdate_Options {
 		        name="tsu_options[<?php echo esc_attr( $args['label_for'] ); ?>]"
 		>
 			<option value="publish" <?php echo isset( $ptions[$args[ 'label_for']] ) ? ( selected( $options[$args[ 'label_for']], 'publish', false ) ) : ( '' ); ?>>
-				<?php echo esc_html( 'Publish right away', TAO_ScheduleUpdate::$TAO_PUBLISH_TEXTDOMAIN ); ?>
+				<?php echo esc_html( __('Publish right away', TAO_ScheduleUpdate::$TAO_PUBLISH_TEXTDOMAIN) ); ?>
 			</option>
 			<option value="nothing" <?php echo isset( $options[$args[ 'label_for']] ) ? ( selected( $options[$args[ 'label_for']], 'nothing', false ) ) : ( '' ); ?>>
-				<?php echo esc_html( 'Don\'t publish', TAO_ScheduleUpdate::$TAO_PUBLISH_TEXTDOMAIN ); ?>
+				<?php echo esc_html( __('Don\'t publish', TAO_ScheduleUpdate::$TAO_PUBLISH_TEXTDOMAIN) ); ?>
 			</option>
 		</select>
 		<p class="description">
@@ -97,7 +97,7 @@ class TAO_ScheduleUpdate_Options {
 			       name="tsu_options[<?php echo esc_attr( $args['label_for'] ); ?>]"
 			       <?php echo $checked ?>
 			>
-			<?php echo esc_html( __( 'Scheduled posts are visible in the frontend', TAO_ScheduleUpdate::$TAO_PUBLISH_TEXTDOMAIN ) ); ?>
+			<?php echo esc_html( __( 'Scheduled posts are visible for anonymous users in the frontend', TAO_ScheduleUpdate::$TAO_PUBLISH_TEXTDOMAIN ) ); ?>
 		</label>
 		<?php
 	}

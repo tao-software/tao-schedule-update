@@ -310,10 +310,11 @@ class TAO_ScheduleUpdate {
 			<p>
 				<div id="pastmsg" style="color:red; display:none;">
 					<?php
+		echo __( 'The releasedate is in the past.', self::$TAO_PUBLISH_TEXTDOMAIN );
 		if ( TAO_ScheduleUpdate_Options::get( 'tsu_nodate' ) == 'nothing' ) {
-			echo __( 'The releasedate is in the past, this post will no be published.', self::$TAO_PUBLISH_TEXTDOMAIN );
+			echo __( 'This post will no be published.', self::$TAO_PUBLISH_TEXTDOMAIN );
 		} else {
-			echo __( 'The releasedate is in the past, this post will be published 5 Minutes from now.', self::$TAO_PUBLISH_TEXTDOMAIN );
+			echo __( 'This post will be published 5 minutes from now.', self::$TAO_PUBLISH_TEXTDOMAIN );
 		}
 ?>
 				</div>
