@@ -88,22 +88,40 @@ class TAO_ScheduleUpdate {
 	public static function register_post_status() {
 		$public = false;
 		if ( TAO_ScheduleUpdate_Options::get( 'tsu_visible' ) ) {
-			$public = true;
+			//we only want to register as public if we're not on the search page
+			$public = is_search();
 		}
+
+		//compatibility with CMS Tree Page View
+		$exclude_from_search = !is_admin();
+
+
 		$args = array(
 			'label'                     => _x( self::$TAO_PUBLISH_LABEL, 'Status General Name', 'default' ),
 			'public'                    => $public,
 			'internal'                  => true,
-			'publicly_queryable'        => false,
+			'publicly_queryable'        => true,
 			'protected'                 => true,
-			'exclude_from_search'       => true,
+			'exclude_from_search'       => $exclude_from_search,
 			'show_in_admin_all_list'    => true,
 			'show_in_admin_status_list' => true,
 			'label_count'               => _n_noop( self::$TAO_PUBLISH_LABEL . ' <span class="count">(%s)</span>', self::$TAO_PUBLISH_LABEL . ' <span class="count">(%s)</span>', self::$TAO_PUBLISH_TEXTDOMAIN ),
 		);
-		register_post_status( self::$TAO_PUBLISH_STATUS, $args );
-	}
 
+		register_post_status( self::$TAO_PUBLISH_STATUS, $args );
+
+		//add a filter to show scheduled updates in the "parent" dropdown
+		add_filter( 'page_attributes_dropdown_pages_args', function ( $args ) {
+
+				if ( !isset( $args['post_status'] ) || !is_array( $args['post_status'] )  ) {
+					$args['post_status'] = array( 'publish' );
+				}
+
+				$args['post_status'][] = 'tao_sc_publish';
+
+				return $args;
+			} );
+	}
 
 	/**
 	 * Adds post's state to 'scheduled updates'-posts.
@@ -416,9 +434,9 @@ class TAO_ScheduleUpdate {
 
 		$new_author = wp_get_current_user();
 
-		$parent = $post->ID;
+		$original = $post->ID;
 		if( $post->post_status == self::$TAO_PUBLISH_STATUS ) {
-			$post = get_post_meta(self::$TAO_PUBLISH_STATUS . '_original', $post->ID, true);
+			$original = get_post_meta($post->ID, self::$TAO_PUBLISH_STATUS . '_original', true);
 		}
 
 		//create the new post
@@ -430,7 +448,7 @@ class TAO_ScheduleUpdate {
 			'post_content'   => $post->post_content,
 			'post_excerpt'   => $post->post_excerpt,
 			'post_mime_type' => $post->mime_type,
-			'post_parent'    => $parent,
+			'post_parent'    => $post->ID,
 			'post_password'  => $post->post_password,
 			'post_status'    => self::$TAO_PUBLISH_STATUS,
 			'post_title'     => $post->post_title,
@@ -444,7 +462,7 @@ class TAO_ScheduleUpdate {
 		self::copy_meta_and_terms( $post->ID, $new_post_id );
 
 		//and finally referencing the original post
-		add_post_meta( $new_post_id, self::$TAO_PUBLISH_STATUS . '_original', $post->ID );
+		update_post_meta( $new_post_id, self::$TAO_PUBLISH_STATUS . '_original', $original );
 
 		/**
 		 * Fires when a post has been duplicated.
