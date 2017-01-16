@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: TAO Schedule Update v1.04\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-16 14:22+0100\n"
-"PO-Revision-Date: 2017-01-16 14:23+0100\n"
+"POT-Creation-Date: 2017-01-16 15:28+0100\n"
+"PO-Revision-Date: 2017-01-16 15:28+0100\n"
 "Last-Translator: TAO Software <software@tao.at>\n"
 "Language-Team: \n"
 "Language: de_DE\n"
@@ -19,35 +19,35 @@ msgstr ""
 "X-Textdomain-Support: yes\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: options.php:19
+#: options.php:26
 msgid "No Date Set"
 msgstr "Kein Datum gesetzt"
 
-#: options.php:31
+#: options.php:38
 msgid "Posts Visible"
 msgstr "Posts sichtbar"
 
-#: options.php:43
+#: options.php:50
 msgid "Recursive scheduling"
 msgstr "Rekursive Planung"
 
-#: options.php:83
+#: options.php:115
 msgid "Publish right away"
 msgstr "Sofort veröffentlichen"
 
-#: options.php:86
+#: options.php:118
 msgid "Don't publish"
 msgstr "Nicht veröffentlichen"
 
-#: options.php:90
+#: options.php:122
 msgid "What should happen to a post if it is saved with no date set?"
 msgstr "Was soll mit Posts ohne Veröffentlichungsdatum geschehen?"
 
-#: options.php:110
+#: options.php:149
 msgid "Scheduled posts are visible for anonymous users in the frontend"
 msgstr "Geplante Posts sind für anonyme Benutzer sichtbar"
 
-#: options.php:129
+#: options.php:175
 msgid "Allow recursive scheduling"
 msgstr "Rekursive Planung aktivieren"
 
@@ -55,60 +55,60 @@ msgstr "Rekursive Planung aktivieren"
 msgid "Scheduled Update"
 msgstr "Geplante Änderung"
 
-#: tao-schedule-update.php:107
+#: tao-schedule-update.php:111
 #, php-format
 msgid " <span class=\"count\">(%s)</span>"
 msgid_plural " <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#: tao-schedule-update.php:145
+#: tao-schedule-update.php:153
 msgid "Original"
 msgstr "Original"
 
-#: tao-schedule-update.php:167
+#: tao-schedule-update.php:176
 msgid "Publish Now"
 msgstr "Jetzt Veröffentlichen"
 
-#: tao-schedule-update.php:169
+#: tao-schedule-update.php:178
 msgid "Schedule recursive"
 msgstr "Rekursiv Planen"
 
-#: tao-schedule-update.php:190 tao-schedule-update.php:311
-#: tao-schedule-update.php:313
+#: tao-schedule-update.php:200 tao-schedule-update.php:327
+#: tao-schedule-update.php:329
 msgid "Releasedate"
 msgstr "Veröffentlichungsdatum"
 
-#: tao-schedule-update.php:227
+#: tao-schedule-update.php:240
 #, php-format
 msgid "Could not schedule %s %s"
 msgstr "%s %s konnte nicht als Geplante Änderung angelegt werden"
 
-#: tao-schedule-update.php:229
+#: tao-schedule-update.php:242
 msgid "Back"
 msgstr "Zurück"
 
-#: tao-schedule-update.php:279
+#: tao-schedule-update.php:294
 msgid "Save"
 msgstr "Speichern"
 
-#: tao-schedule-update.php:316 tao-schedule-update.php:318
+#: tao-schedule-update.php:332 tao-schedule-update.php:334
 msgid "Time"
 msgstr "Zeit"
 
-#: tao-schedule-update.php:330
+#: tao-schedule-update.php:346
 #, php-format
 msgid "Please enter <i>Time</i> as %s"
 msgstr "Ihre Zeitzone ist %s"
 
-#: tao-schedule-update.php:335
+#: tao-schedule-update.php:351
 msgid "The releasedate is in the past."
 msgstr "Das Veröffentlichungsdatum liegt in der Vergangenheit."
 
-#: tao-schedule-update.php:337
+#: tao-schedule-update.php:353
 msgid "This post will no be published."
 msgstr "Dieser Post wird nicht veröffentlicht."
 
-#: tao-schedule-update.php:339
+#: tao-schedule-update.php:355
 msgid "This post will be published 5 minutes from now."
 msgstr "Dieser Post wird in 5 Minuten veröffentlicht."
