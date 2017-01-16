@@ -47,6 +47,10 @@ This is just a little side project I am maintaining as time permits. If you find
 
 == Changelog ==
 
+= 1.10 =
+
+* fix publishing fail
+
 = 1.09 =
 
 * added options page
