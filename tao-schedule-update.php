@@ -385,12 +385,15 @@ class TAO_ScheduleUpdate {
 
 		if ( empty( $tzstring ) ) { // Create a UTC+- zone if no timezone string exists
 			$check_zone_info = false;
-			if ( 0 == $current_offset )
+			if ( 0 == $current_offset ) {
 				$tzstring = 'UTC+0';
-			elseif ( $current_offset < 0 )
+			}
+			elseif ( $current_offset < 0 ) {
 				$tzstring = 'UTC' . $current_offset;
-			else
+			}
+			else {
 				$tzstring = 'UTC+' . $current_offset;
+			}
 		}
 
 		return $tzstring;
@@ -574,7 +577,7 @@ class TAO_ScheduleUpdate {
 				}
 
 				wp_clear_scheduled_hook( 'tao_publish_post', array( 'ID' => $post_id ) );
-				if ( $stampchange && TAO_ScheduleUpdate_Options::get( 'tsu_nodate' ) == 'publish' ) {
+				if ( !$stampchange || TAO_ScheduleUpdate_Options::get( 'tsu_nodate' ) == 'publish' ) {
 					update_post_meta( $post_id, $pub, $stamp );
 					wp_schedule_single_event( $stamp, 'tao_publish_post', array( 'ID' => $post_id ) );
 				}
