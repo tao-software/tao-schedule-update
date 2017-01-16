@@ -4,6 +4,13 @@ class TAO_ScheduleUpdate_Options {
 
 	protected static $TAO_PUBLISH_OPTIONS = array();
 
+	/**
+	 * Registers all needed options via the wordpress settings API
+	 *
+	 * @see register_settig, add_settings_section, add_settings_field
+	 *
+	 * @return void
+	 */
 	public static function init() {
 		register_setting( 'tao_schedule_update', 'tsu_options' );
 
@@ -51,10 +58,21 @@ class TAO_ScheduleUpdate_Options {
 		);
 	}
 
+	/**
+	 * Loads the saved options from the database
+	 *
+	 * @return void
+	 */
 	public static function load_options() {
 		self::$TAO_PUBLISH_OPTIONS = get_option( 'tsu_options' );
 	}
 
+	/**
+	 * Get a option value
+	 *
+	 * @param string  $optname name of the option
+	 * @return mixed Value of the requested option
+	 */
 	public static function get( $optname ) {
 		if ( isset( self::$TAO_PUBLISH_OPTIONS[$optname] ) ) {
 			return self::$TAO_PUBLISH_OPTIONS[$optname];
@@ -62,6 +80,13 @@ class TAO_ScheduleUpdate_Options {
 		return null;
 	}
 
+	/**
+	 * Registers the option page within wordpress
+	 *
+	 * @see add_options_page
+	 *
+	 * @return void
+	 */
 	public static function options_page() {
 		// add top level menu page
 		add_options_page(
@@ -73,6 +98,13 @@ class TAO_ScheduleUpdate_Options {
 		);
 	}
 
+	/**
+	 * Renders the settings field for `nodate`
+	 *
+	 * @param array   $args array of arguments, passed by do_settings_fields
+	 *
+	 * @return void
+	 */
 	public static function field_nodate_cb( $args ) {
 		$options = get_option( 'tsu_options' );
 ?>
@@ -93,6 +125,13 @@ class TAO_ScheduleUpdate_Options {
 		<?php
 	}
 
+	/**
+	 * Renders the settings field for `visible`
+	 *
+	 * @param array   $args array of arguments, passed by do_settings_fields
+	 *
+	 * @return void
+	 */
 	public static function field_visible_cb( $args ) {
 		$options = get_option( 'tsu_options' );
 
@@ -112,6 +151,13 @@ class TAO_ScheduleUpdate_Options {
 		<?php
 	}
 
+	/**
+	 * Renders the settings field for `recursive`
+	 *
+	 * @param array   $args array of arguments, passed by do_settings_fields
+	 *
+	 * @return void
+	 */
 	public static function field_recursive_cb( $args ) {
 		$options = get_option( 'tsu_options' );
 
@@ -131,6 +177,11 @@ class TAO_ScheduleUpdate_Options {
 		<?php
 	}
 
+	/**
+	 * Renders the options page html
+	 *
+	 * @return void
+	 */
 	public static function options_page_html() {
 		// check user capabilities
 		if ( !current_user_can( 'manage_options' ) ) {

@@ -46,6 +46,7 @@ class TAO_ScheduleUpdate {
 	 * Wrapper for wp's own load_plugin_textdomain.
 	 *
 	 * @access private
+	 *
 	 * @return void
 	 */
 	private static function load_plugin_textdomain() {
@@ -56,6 +57,7 @@ class TAO_ScheduleUpdate {
 	 * Retreives all currently registered posttypes.
 	 *
 	 * @access private
+	 *
 	 * @return array Array of all registered post type as objects
 	 */
 	private static function get_post_types() {
@@ -67,6 +69,7 @@ class TAO_ScheduleUpdate {
 	 * Displays a post's publishing date.
 	 *
 	 * @see get_post_meta
+	 *
 	 * @return void
 	 */
 	public static function load_pubdate() {
@@ -83,6 +86,7 @@ class TAO_ScheduleUpdate {
 	 * Registers the post status tao_sc_publish.
 	 *
 	 * @see register_post_status
+	 *
 	 * @return void
 	 */
 	public static function register_post_status() {
@@ -94,7 +98,6 @@ class TAO_ScheduleUpdate {
 
 		//compatibility with CMS Tree Page View
 		$exclude_from_search = !is_admin();
-
 
 		$args = array(
 			'label'                     => _x( self::$TAO_PUBLISH_LABEL, 'Status General Name', 'default' ),
@@ -109,24 +112,30 @@ class TAO_ScheduleUpdate {
 		);
 
 		register_post_status( self::$TAO_PUBLISH_STATUS, $args );
+	}
 
-		//add a filter to show scheduled updates in the "parent" dropdown
-		add_filter( 'page_attributes_dropdown_pages_args', function ( $args ) {
+	/**
+	 * Adds the tao-schedule-update post status to the list of displayable stati in the parent dropdown
+	 *
+	 * @param array   $args arguments passed by the filter
+	 *
+	 * @return array Array of parameters
+	 */
+	public static function parent_dropdown_status( $args ) {
+		if ( !isset( $args['post_status'] ) || !is_array( $args['post_status'] )  ) {
+			$args['post_status'] = array( 'publish' );
+		}
 
-				if ( !isset( $args['post_status'] ) || !is_array( $args['post_status'] )  ) {
-					$args['post_status'] = array( 'publish' );
-				}
+		$args['post_status'][] = 'tao_sc_publish';
 
-				$args['post_status'][] = 'tao_sc_publish';
-
-				return $args;
-			} );
+		return $args;
 	}
 
 	/**
 	 * Adds post's state to 'scheduled updates'-posts.
 	 *
 	 * @param array   $states Array of post states
+	 *
 	 * @global $post
 	 */
 	public static function display_post_states( $states ) {
@@ -156,7 +165,8 @@ class TAO_ScheduleUpdate {
 	 * to all non-scheduled posts.
 	 *
 	 * @param array   $actions Array of available actions added by previous hooks
-	 * @oaram post $post the post for which to add actions
+	 * @param post    $post    the post for which to add actions
+	 *
 	 * @return array Array of available actions for the given post
 	 */
 	public static function page_row_actions( $actions, $post ) {
@@ -179,6 +189,7 @@ class TAO_ScheduleUpdate {
 	 * Adds a column to the pages overview.
 	 *
 	 * @param array   $columns Array of available columns added by previous hooks
+	 *
 	 * @return array Array of available columns
 	 */
 	public static function manage_pages_columns( $columns ) {
@@ -197,8 +208,11 @@ class TAO_ScheduleUpdate {
 	 * Manages the content of previously added custom columns.
 	 *
 	 * @see TAO_ScheduleUpdate::manage_pages_columns()
+	 *
 	 * @param string  $column  Name of the column
 	 * @param int     $post_id id of the current post
+	 *
+	 * @return void
 	 */
 	public static function manage_pages_custom_column( $column, $post_id ) {
 		if ( 'tao_publish' == $column ) {
@@ -245,8 +259,10 @@ class TAO_ScheduleUpdate {
 	/**
 	 * Adds the 'scheduled update'-metabox to the edit-page screen.
 	 *
-	 * @param post    $post The post being currently edited
 	 * @see add_meta_box
+	 *
+	 * @param post    $post The post being currently edited
+	 *
 	 * @return void
 	 */
 	public static function add_meta_boxes_page( $post_type, $post ) {
@@ -288,6 +304,7 @@ class TAO_ScheduleUpdate {
 	 * Creates the HTML-Code for the 'scheduled update'-metabox
 	 *
 	 * @param post    $post The post being currently edited
+	 *
 	 * @return void
 	 */
 	public static function create_meta_box( $post ) {
@@ -350,7 +367,9 @@ class TAO_ScheduleUpdate {
 	 * Retreives either the timezone_string or the gmt_offset.
 	 *
 	 * @see get_option
+	 *
 	 * @access private
+	 *
 	 * @return string The set timezone
 	 */
 	private static function get_timezone_string() {
@@ -381,6 +400,7 @@ class TAO_ScheduleUpdate {
 	 * Creates a timezone object based on the option gmt_offset
 	 *
 	 * @see DateTimeZone
+	 *
 	 * @return DateTimeZone timezone specified by the gmt_offset option
 	 */
 	private static function get_timezone_object() {
@@ -405,6 +425,7 @@ class TAO_ScheduleUpdate {
 	 * @param string  $new_status the post's new status
 	 * @param string  $old_status the post's old status
 	 * @param post    $post       the post changing status
+	 *
 	 * @return void
 	 */
 	public static function prevent_status_change( $new_status, $old_status, $post ) {
@@ -428,15 +449,16 @@ class TAO_ScheduleUpdate {
 	 * Copies an entire post and sets it's status to 'scheduled update'
 	 *
 	 * @param post    $post the post to be copied
-	 * @return int - ID of the newly created post
+	 *
+	 * @return int ID of the newly created post
 	 */
 	public static function create_publishing_post( $post ) {
 
 		$new_author = wp_get_current_user();
 
 		$original = $post->ID;
-		if( $post->post_status == self::$TAO_PUBLISH_STATUS ) {
-			$original = get_post_meta($post->ID, self::$TAO_PUBLISH_STATUS . '_original', true);
+		if ( $post->post_status == self::$TAO_PUBLISH_STATUS ) {
+			$original = get_post_meta( $post->ID, self::$TAO_PUBLISH_STATUS . '_original', true );
 		}
 
 		//create the new post
@@ -479,6 +501,7 @@ class TAO_ScheduleUpdate {
 	 *
 	 * @param int     $source_post_id      the post from which to copy
 	 * @param int     $destination_post_id the post which will get the meta and terms
+	 *
 	 * @return void
 	 */
 	public static function copy_meta_and_terms( $source_post_id, $destination_post_id ) {
@@ -530,6 +553,7 @@ class TAO_ScheduleUpdate {
 	 *
 	 * @param int     $post_id the post's id
 	 * @param post    $post    the post being saved
+	 *
 	 * @return void
 	 */
 	public static function save_meta( $post_id, $post ) {
@@ -566,6 +590,7 @@ class TAO_ScheduleUpdate {
 	 * 'publish now' action
 	 *
 	 * @param int     $post_id the post's id
+	 *
 	 * @return int the original post's id
 	 */
 	public static function publish_post( $post_id ) {
@@ -605,6 +630,7 @@ class TAO_ScheduleUpdate {
 	 * disables the kses filters before and reenables them after the post has been published
 	 *
 	 * @param int     $post_id the post's id
+	 *
 	 * @return void
 	 */
 	public static function cron_publish_post( $post_id ) {
@@ -617,8 +643,10 @@ class TAO_ScheduleUpdate {
 	/**
 	 * Reformats a timestamp into human readable publishing date and time
 	 *
-	 * @param int     $stamp unix timestamp to be formatted
 	 * @see date_i18n, DateTime, TAO_ScheduleUpdate::get_timezone_object
+	 *
+	 * @param int     $stamp unix timestamp to be formatted
+	 *
 	 * @return string the formatted timestamp
 	 */
 	public static function getPubdate( $stamp ) {
@@ -643,3 +671,4 @@ add_filter( 'display_post_states', create_function( '$states', 'return TAO_Sched
 add_filter( 'page_row_actions', create_function( '$actions, $post', 'return TAO_ScheduleUpdate::page_row_actions( $actions, $post );' ), 10, 2 );
 add_filter( 'post_row_actions', create_function( '$actions, $post', 'return TAO_ScheduleUpdate::page_row_actions( $actions, $post );' ), 10, 2 );
 add_filter( 'manage_pages_columns', create_function( '$columns', 'return TAO_ScheduleUpdate::manage_pages_columns( $columns );' ) );
+add_filter( 'page_attributes_dropdown_pages_args', create_function( '$args', 'return TAO_ScheduleUpdate::parent_dropdown_status( $args );' ) );
