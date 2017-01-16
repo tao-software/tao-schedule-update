@@ -3,7 +3,7 @@ Contributors: romanweinberger, syberspace
 Donate link: http://software.tao.at/
 Tags: publishing, timing, cron, schedule, unattended
 Requires at least: 3.7.0
-Tested up to: 4.5
+Tested up to: 4.7.1
 Stable tag: trunk
 License: MIT
 License URI: http://opensource.org/licenses/MIT
@@ -46,6 +46,12 @@ This is just a little side project I am maintaining as time permits. If you find
 1. The Plugin in Action
 
 == Changelog ==
+
+= 1.09 =
+
+* added options page
+* added recursive scheduling (enable this via the options page)
+* code cleanup, unified comment styles, code formatting
 
 = 1.08 =
 
