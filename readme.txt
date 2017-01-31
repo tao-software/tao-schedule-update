@@ -47,6 +47,10 @@ This is just a little side project I am maintaining as time permits. If you find
 
 == Changelog ==
 
+= 1.11 =
+
+* fix display of date in listview
+
 = 1.10 =
 
 * fix publishing fail
