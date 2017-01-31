@@ -655,7 +655,8 @@ class TAO_ScheduleUpdate {
 	public static function getPubdate( $stamp ) {
 		$date = new DateTime( 'now', self::get_timezone_object() );
 		$date->setTimestamp( $stamp );
-		$str = $date->format( 'd.' ) . date_i18n( ' F Y', mktime( 0, 0, 0, $date->format( 'm' ) ) ) . ' - ' . $date->format( 'H:i \U\T\CO' );
+		$offset = get_option( 'gmt_offset' ) * 3600;
+		$str = date_i18n('d. F Y H:i \U\T\CO', $date->getTimestamp() + $offset);
 		return $str;
 	}
 
