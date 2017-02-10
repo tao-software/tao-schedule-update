@@ -47,6 +47,10 @@ This is just a little side project I am maintaining as time permits. If you find
 
 == Changelog ==
 
+= 1.12 =
+
+* fix timepicker stylesheet issue on https
+
 = 1.11 =
 
 * fix display of date in listview

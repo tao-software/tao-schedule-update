@@ -4,7 +4,7 @@
  * Description: Allows you to plan changes on any post type
  * Author: TAO Software
  * Author URI: http://software.tao.at
- * Version: 1.11
+ * Version: 1.12
  * License: MIT
  */
 
@@ -272,7 +272,7 @@ class TAO_ScheduleUpdate {
 		echo '<style> #duplicate-action, #delete-action, #minor-publishing-actions, #misc-publishing-actions, #preview-action {display:none;} </style>';
 
 		wp_enqueue_script( 'jquery-ui-datepicker' );
-		$url = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/blitzer/jquery-ui.min.css';
+		$url = '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/blitzer/jquery-ui.min.css';
 		wp_enqueue_style( 'jquery-ui-blitzer', $url );
 		wp_enqueue_script( self::$TAO_PUBLISH_STATUS . '-datepicker.js', plugins_url( 'js/publish-datepicker.js', __FILE__ ), array( 'jquery-ui-datepicker' ) );
 
