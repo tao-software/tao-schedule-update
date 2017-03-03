@@ -93,7 +93,7 @@ class TAO_ScheduleUpdate {
 		$public = false;
 		if ( TAO_ScheduleUpdate_Options::get( 'tsu_visible' ) ) {
 			//we only want to register as public if we're not on the search page
-			$public = is_search();
+			$public = !is_search();
 		}
 
 		//compatibility with CMS Tree Page View
