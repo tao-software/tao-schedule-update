@@ -4,7 +4,7 @@
  * Description: Allows you to plan changes on any post type
  * Author: TAO Software
  * Author URI: http://software.tao.at
- * Version: 1.12
+ * Version: 1.13
  * License: MIT
  */
 
