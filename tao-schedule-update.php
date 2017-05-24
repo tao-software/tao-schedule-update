@@ -1,43 +1,68 @@
 <?php
 /**
+ * TAO Schedule Update
+ *
  * Plugin Name: TAO Schedule Update
  * Description: Allows you to plan changes on any post type
- * Author: TAO Software
- * Author URI: http://software.tao.at
+ * Author: TAO Digital
+ * Author URI: http://tao-digital.at/
  * Version: 1.12
  * License: MIT
+ *
+ * @package tao
  */
 
+/**
+ * TAO Scheudle Update main class
+ */
 class TAO_ScheduleUpdate {
 
 
-	public static $TAO_PUBLISH_LABEL         = 'Scheduled Update';
-	public static $TAO_PUBLISH_TEXTDOMAIN    = 'tao-scheduleupdate-td';
+	/**
+	 * Label to be displayed to the user
+	 *
+	 * @access public
+	 * @var string
+	 */
+	public static $tao_publish_label         = 'Scheduled Update';
 
-	protected static $TAO_PUBLISH_METABOX    = 'Scheduled Update';
-	protected static $TAO_PUBLISH_STATUS     = 'tao_sc_publish';
+	/**
+	 * Title for the Publish Metabox
+	 *
+	 * @access protected
+	 * @var string
+	 */
+	protected static $_tao_publish_metabox    = 'Scheduled Update';
+
+	/**
+	 * Status for wordpress posts
+	 *
+	 * @access protected
+	 * @var string
+	 */
+	protected static $_tao_publish_status     = 'tao_sc_publish';
 
 
 	/**
-	 * Initializes TAO_PUBLISH_LABEL and TAO_PUBLISH_METABOX with their localized strings.
+	 * Initializes tao_publish_label and _tao_publish_metabox with their localized strings.
 	 *
-	 * This method initializes TAO_PUBLISH_LABEL and TAO_PUBLISH_METABOX with their localized
+	 * This method initializes tao_publish_label and _tao_publish_metabox with their localized
 	 * strings and registers the tao_sc_publish post status.
 	 *
 	 * @return void
 	 */
 	public static function init() {
-		require_once dirname( __FILE__ ).'/options.php';
+		require_once dirname( __FILE__ ) . '/options.php';
 
 		self::load_plugin_textdomain();
-		self::$TAO_PUBLISH_LABEL   = __( 'Scheduled Update', self::$TAO_PUBLISH_TEXTDOMAIN );
-		self::$TAO_PUBLISH_METABOX = __( 'Scheduled Update', self::$TAO_PUBLISH_TEXTDOMAIN );
+		self::$tao_publish_label   = __( 'Scheduled Update', 'tao-scheduleupdate-td' );
+		self::$_tao_publish_metabox = __( 'Scheduled Update', 'tao-scheduleupdate-td' );
 		self::register_post_status();
 
 		$pt = TAO_ScheduleUpdate::get_post_types();
 		foreach ( $pt as $type ) {
-			add_action( 'manage_edit-'.$type->name.'_columns', create_function( '$columns', 'return TAO_ScheduleUpdate::manage_pages_columns( $columns );' ) );
-			add_filter( 'manage_'.$type->name.'_posts_custom_column', create_function( '$column, $post_id', 'return TAO_ScheduleUpdate::manage_pages_custom_column( $column, $post_id );' ), 10, 2 );
+			add_action( 'manage_edit-' . $type->name . '_columns', create_function( '$columns', 'return TAO_ScheduleUpdate::manage_pages_columns( $columns );' ) );
+			add_filter( 'manage_' . $type->name . '_posts_custom_column', create_function( '$column, $post_id', 'return TAO_ScheduleUpdate::manage_pages_custom_column( $column, $post_id );' ), 10, 2 );
 			add_action( 'add_meta_boxes', create_function( '$post_type, $post', 'return TAO_ScheduleUpdate::add_meta_boxes_page( $post_type, $post );' ), 10, 2 );
 		}
 	}
@@ -50,7 +75,7 @@ class TAO_ScheduleUpdate {
 	 * @return void
 	 */
 	private static function load_plugin_textdomain() {
-		load_plugin_textdomain( self::$TAO_PUBLISH_TEXTDOMAIN, false, dirname( plugin_basename( __FILE__ ) ) . '/language/' );
+		load_plugin_textdomain( 'tao-scheduleupdate-td', false, dirname( plugin_basename( __FILE__ ) ) . '/language/' );
 	}
 
 	/**
@@ -61,7 +86,9 @@ class TAO_ScheduleUpdate {
 	 * @return array Array of all registered post type as objects
 	 */
 	private static function get_post_types() {
-		return get_post_types( array( 'public' => true ), 'objects' );
+		return get_post_types( array(
+			'public' => true,
+		), 'objects' );
 	}
 
 
@@ -73,12 +100,12 @@ class TAO_ScheduleUpdate {
 	 * @return void
 	 */
 	public static function load_pubdate() {
-		$stamp = get_post_meta( $_REQUEST['postid'], self::$TAO_PUBLISH_STATUS . '_pubdate', true );
+		$stamp = get_post_meta( $_REQUEST['postid'], self::$_tao_publish_status . '_pubdate', true );
 		if ( $stamp ) {
 			$str  = '<div style="margin-left:20px">';
-			$str .= TaoPublish::getPubdate( $stamp );
+			$str .= TaoPublish::get_pubdate( $stamp );
 			$str .= '</div>';
-			die( $str );
+			die( $str ); // WPCS: XSS okay.
 		}
 	}
 
@@ -92,15 +119,15 @@ class TAO_ScheduleUpdate {
 	public static function register_post_status() {
 		$public = false;
 		if ( TAO_ScheduleUpdate_Options::get( 'tsu_visible' ) ) {
-			//we only want to register as public if we're not on the search page
-			$public = !is_search();
+			// we only want to register as public if we're not on the search page.
+			$public = ! is_search();
 		}
 
-		//compatibility with CMS Tree Page View
-		$exclude_from_search = !is_admin();
+		// compatibility with CMS Tree Page View.
+		$exclude_from_search = ! is_admin();
 
 		$args = array(
-			'label'                     => _x( self::$TAO_PUBLISH_LABEL, 'Status General Name', 'default' ),
+			'label'                     => _x( 'Scheduled Update', 'Status General Name', 'default' ),
 			'public'                    => $public,
 			'internal'                  => true,
 			'publicly_queryable'        => true,
@@ -108,21 +135,21 @@ class TAO_ScheduleUpdate {
 			'exclude_from_search'       => $exclude_from_search,
 			'show_in_admin_all_list'    => true,
 			'show_in_admin_status_list' => true,
-			'label_count'               => _n_noop( self::$TAO_PUBLISH_LABEL . ' <span class="count">(%s)</span>', self::$TAO_PUBLISH_LABEL . ' <span class="count">(%s)</span>', self::$TAO_PUBLISH_TEXTDOMAIN ),
+			'label_count'               => _n_noop( 'Scheduled Update <span class="count">(%s)</span>', 'Scheduled Update <span class="count">(%s)</span>', 'tao-scheduleupdate-td' ),
 		);
 
-		register_post_status( self::$TAO_PUBLISH_STATUS, $args );
+		register_post_status( self::$_tao_publish_status, $args );
 	}
 
 	/**
 	 * Adds the tao-schedule-update post status to the list of displayable stati in the parent dropdown
 	 *
-	 * @param array   $args arguments passed by the filter
+	 * @param array $args arguments passed by the filter.
 	 *
 	 * @return array Array of parameters
 	 */
 	public static function parent_dropdown_status( $args ) {
-		if ( !isset( $args['post_status'] ) || !is_array( $args['post_status'] )  ) {
+		if ( ! isset( $args['post_status'] ) || ! is_array( $args['post_status'] ) ) {
 			$args['post_status'] = array( 'publish' );
 		}
 
@@ -134,7 +161,7 @@ class TAO_ScheduleUpdate {
 	/**
 	 * Adds post's state to 'scheduled updates'-posts.
 	 *
-	 * @param array   $states Array of post states
+	 * @param array $states Array of post states.
 	 *
 	 * @global $post
 	 */
@@ -142,15 +169,17 @@ class TAO_ScheduleUpdate {
 		global $post;
 		$arg = get_query_var( 'post_status' );
 		$the_post_types = self::get_post_types();
-		// default states for non public posts
-		if ( !isset( $the_post_types[$post->post_type] ) ) return $states;
-		$type = $the_post_types[$post->post_type];
+		// default states for non public posts.
+		if ( ! isset( $the_post_types[ $post->post_type ] ) ) {
+			return $states;
+		}
+		$type = $the_post_types[ $post->post_type ];
 
-		if ( $arg != self::$TAO_PUBLISH_LABEL && $post->post_status == self::$TAO_PUBLISH_STATUS ) {
-			$states = array( self::$TAO_PUBLISH_LABEL );
+		if ( $arg !== self::$tao_publish_label && $post->post_status === self::$_tao_publish_status ) {
+			$states = array( self::$tao_publish_label );
 			if ( ! $type->hierarchical ) {
-				$orig = get_post( get_post_meta( $post->ID, self::$TAO_PUBLISH_STATUS . '_original', true ) );
-				array_push( $states, __( 'Original', self::$TAO_PUBLISH_TEXTDOMAIN ).': ' . $orig->post_title );
+				$orig = get_post( get_post_meta( $post->ID, self::$_tao_publish_status . '_original', true ) );
+				array_push( $states, __( 'Original', 'tao-scheduleupdate-td' ) . ': ' . $orig->post_title );
 			}
 		}
 
@@ -164,21 +193,21 @@ class TAO_ScheduleUpdate {
 	 * Adds a link for immediate publishing to all sheduled posts. Adds a link to schedule a change
 	 * to all non-scheduled posts.
 	 *
-	 * @param array   $actions Array of available actions added by previous hooks
-	 * @param post    $post    the post for which to add actions
+	 * @param array $actions Array of available actions added by previous hooks.
+	 * @param post  $post    the post for which to add actions.
 	 *
 	 * @return array Array of available actions for the given post
 	 */
 	public static function page_row_actions( $actions, $post ) {
 		$copy = '?action=workflow_copy_to_publish&post=' . $post->ID;
-		if ( $post->post_status == self::$TAO_PUBLISH_STATUS ) {
+		if ( $post->post_status === self::$_tao_publish_status ) {
 			$action = '?action=workflow_publish_now&post=' . $post->ID;
-			$actions['publish_now'] = '<a href="' . admin_url( 'admin.php' . $action ) .'">' . __( 'Publish Now', self::$TAO_PUBLISH_TEXTDOMAIN ) . '</a>';
+			$actions['publish_now'] = '<a href="' . admin_url( 'admin.php' . $action ) . '">' . __( 'Publish Now', 'tao-scheduleupdate-td' ) . '</a>';
 			if ( TAO_ScheduleUpdate_Options::get( 'tsu_recursive' ) ) {
-				$actions['copy_to_publish'] = '<a href="' . admin_url( 'admin.php' . $copy ) . '">'.__( 'Schedule recursive', self::$TAO_PUBLISH_TEXTDOMAIN ).'</a>';
+				$actions['copy_to_publish'] = '<a href="' . admin_url( 'admin.php' . $copy ) . '">' . __( 'Schedule recursive', 'tao-scheduleupdate-td' ) . '</a>';
 			}
-		} elseif ( $post->post_status != 'trash' ) {
-			$actions['copy_to_publish'] = '<a href="' . admin_url( 'admin.php' . $copy ) . '">' . self::$TAO_PUBLISH_LABEL . '</a>';
+		} elseif ( 'trash' !== $post->post_status ) {
+			$actions['copy_to_publish'] = '<a href="' . admin_url( 'admin.php' . $copy ) . '">' . self::$tao_publish_label . '</a>';
 		}
 
 		return $actions;
@@ -188,16 +217,16 @@ class TAO_ScheduleUpdate {
 	/**
 	 * Adds a column to the pages overview.
 	 *
-	 * @param array   $columns Array of available columns added by previous hooks
+	 * @param array $columns Array of available columns added by previous hooks.
 	 *
 	 * @return array Array of available columns
 	 */
 	public static function manage_pages_columns( $columns ) {
 		$new = array();
 		foreach ( $columns as $key => $val ) {
-			$new[$key] = $val;
-			if ( 'title' == $key ) {
-				$new['tao_publish'] = __( 'Releasedate', self::$TAO_PUBLISH_TEXTDOMAIN );
+			$new[ $key ] = $val;
+			if ( 'title' === $key ) {
+				$new['tao_publish'] = esc_html__( 'Releasedate', 'tao-scheduleupdate-td' );
 			}
 		}
 		return $new;
@@ -209,17 +238,17 @@ class TAO_ScheduleUpdate {
 	 *
 	 * @see TAO_ScheduleUpdate::manage_pages_columns()
 	 *
-	 * @param string  $column  Name of the column
-	 * @param int     $post_id id of the current post
+	 * @param string $column  Name of the column.
+	 * @param int    $post_id id of the current post.
 	 *
 	 * @return void
 	 */
 	public static function manage_pages_custom_column( $column, $post_id ) {
-		if ( 'tao_publish' == $column ) {
-			$stamp = get_post_meta( $post_id, self::$TAO_PUBLISH_STATUS . '_pubdate', true );
+		if ( 'tao_publish' === $column ) {
+			$stamp = get_post_meta( $post_id, self::$_tao_publish_status . '_pubdate', true );
 
 			if ( $stamp ) {
-				echo self::getPubdate( $stamp );
+				echo esc_html( self::get_pubdate( $stamp ) );
 			}
 		}
 	}
@@ -235,12 +264,12 @@ class TAO_ScheduleUpdate {
 		$post = get_post( $_REQUEST['post'] );
 		$publishing_id = self::create_publishing_post( $post );
 		if ( $publishing_id ) {
-			wp_redirect( admin_url( 'post.php?action=edit&post='.$publishing_id ) );
+			wp_redirect( admin_url( 'post.php?action=edit&post=' . $publishing_id ) );
 		} else {
-			$html  = sprintf( __( 'Could not schedule %s %s', self::$TAO_PUBLISH_TEXTDOMAIN ), $post->post_type, '<i>'.htmlspecialchars( $post->post_title ).'</i>' );
+			$html  = sprintf( __( 'Could not schedule %1$s %2$s', 'tao-scheduleupdate-td' ), $post->post_type, '<i>' . htmlspecialchars( $post->post_title ) . '</i>' );
 			$html .= '<br><br>';
-			$html .= '<a href="' . esc_attr( admin_url( 'edit.php?post_type='.$post->post_type ) ) . '">' . __( 'Back' ) . '</a>';
-			wp_die( $html );
+			$html .= '<a href="' . esc_attr( admin_url( 'edit.php?post_type=' . $post->post_type ) ) . '">' . __( 'Back' ) . '</a>';
+			wp_die( $html ); // WPCS: XSS okay.
 		}
 	}
 
@@ -252,7 +281,7 @@ class TAO_ScheduleUpdate {
 	public static function admin_action_workflow_publish_now() {
 		$post = get_post( $_REQUEST['post'] );
 		self::publish_post( $post->ID );
-		wp_redirect( admin_url( 'edit.php?post_type='.$post->post_type ) );
+		wp_redirect( admin_url( 'edit.php?post_type=' . $post->post_type ) );
 	}
 
 
@@ -261,57 +290,61 @@ class TAO_ScheduleUpdate {
 	 *
 	 * @see add_meta_box
 	 *
-	 * @param post    $post The post being currently edited
+	 * @param string $post_type The post type of the post being edited.
+	 * @param post   $post      The post being currently edited.
 	 *
 	 * @return void
 	 */
 	public static function add_meta_boxes_page( $post_type, $post ) {
-		if ( $post->post_status != self::$TAO_PUBLISH_STATUS ) return;
+		if ( $post->post_status !== self::$_tao_publish_status ) {
+			return;
+		}
 
-		//hides everything except the 'publish' button in the 'publish'-metabox
-		echo '<style> #duplicate-action, #delete-action, #minor-publishing-actions, #misc-publishing-actions, #preview-action {display:none;} </style>';
+		// hides everything except the 'publish' button in the 'publish'-metabox
+		echo '<style> #duplicate-action, #delete-action, #minor-publishing-actions, #misc-publishing-actions, #preview-action {display:none;} </style>'; // WPCS: XSS okay.
 
 		wp_enqueue_script( 'jquery-ui-datepicker' );
 		$url = '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/blitzer/jquery-ui.min.css';
 		wp_enqueue_style( 'jquery-ui-blitzer', $url );
-		wp_enqueue_script( self::$TAO_PUBLISH_STATUS . '-datepicker.js', plugins_url( 'js/publish-datepicker.js', __FILE__ ), array( 'jquery-ui-datepicker' ) );
+		wp_enqueue_script( self::$_tao_publish_status . '-datepicker.js', plugins_url( 'js/publish-datepicker.js', __FILE__ ), array( 'jquery-ui-datepicker' ) );
 
 		$months = array();
-		for ( $i=1; $i<=12; $i++ ) {
-			$months[] = date_i18n( 'F', strtotime( '2014-'.$i.'-01 00:00:00' ) );
+		for ( $i = 1; $i <= 12; $i++ ) {
+			$months[] = date_i18n( 'F', strtotime( '2014-' . $i . '-01 00:00:00' ) );
 		}
 		$days = array();
-		for ( $i=23;$i<=29;$i++ ) {
-			$days[] = date_i18n( 'D', strtotime( '2014-03-'.$i.' 00:00:00' ) );
+		for ( $i = 23;$i <= 29;$i++ ) {
+			$days[] = date_i18n( 'D', strtotime( '2014-03-' . $i . ' 00:00:00' ) );
 		}
 		$js_data = array(
 			'datepicker' => array(
 				'daynames'   => $days,
 				'monthnames' => $months,
-				'elementid' => self::$TAO_PUBLISH_STATUS . '_pubdate',
+				'elementid' => self::$_tao_publish_status . '_pubdate',
 			),
 			'text' => array(
 				'save' => __( 'Save' ),
 			),
 		);
 
-		wp_localize_script( self::$TAO_PUBLISH_STATUS . '-datepicker.js', 'TAO_ScheduleUpdate', $js_data );
+		wp_localize_script( self::$_tao_publish_status . '-datepicker.js', 'TAOScheduleUpdate', $js_data );
 
-		add_meta_box( 'meta_' . self::$TAO_PUBLISH_STATUS, self::$TAO_PUBLISH_METABOX, create_function( '$post', 'TAO_ScheduleUpdate::create_meta_box( $post );' ), $post_type, 'side' );
+		add_meta_box( 'meta_' . self::$_tao_publish_status, self::$_tao_publish_metabox, create_function( '$post', 'TAO_ScheduleUpdate::create_meta_box( $post );' ), $post_type, 'side' );
 	}
 
 	/**
 	 * Creates the HTML-Code for the 'scheduled update'-metabox
 	 *
-	 * @param post    $post The post being currently edited
+	 * @param post $post The post being currently edited.
 	 *
 	 * @return void
 	 */
 	public static function create_meta_box( $post ) {
-		wp_nonce_field( basename( __FILE__ ), self::$TAO_PUBLISH_STATUS . '_nonce' );
-		$metaname = self::$TAO_PUBLISH_STATUS . '_pubdate';
+		wp_nonce_field( basename( __FILE__ ), self::$_tao_publish_status . '_nonce' );
+		$metaname = self::$_tao_publish_status . '_pubdate';
 		$stamp = get_post_meta( $post->ID, $metaname, true );
-		$date = $time = '';
+		$date = '';
+		$time = '';
 		$dateo = new DateTime( 'now', self::get_timezone_object() );
 		if ( $stamp ) {
 			$dateo->setTimestamp( $stamp );
@@ -319,41 +352,41 @@ class TAO_ScheduleUpdate {
 		$time = $dateo->format( 'H:i' );
 		$date = $dateo->format( 'd.m.Y' );
 
-		if ( !$stamp && TAO_ScheduleUpdate_Options::get( 'tsu_nodate' ) == 'nothing' ) {
+		if ( ! $stamp && TAO_ScheduleUpdate_Options::get( 'tsu_nodate' ) === 'nothing' ) {
 			$date = '';
 		}
 ?>
 			<p>
-				<strong><?php _e( 'Releasedate', self::$TAO_PUBLISH_TEXTDOMAIN ); ?></strong>
+				<strong><?php esc_html_e( 'Releasedate', 'tao-scheduleupdate-td' ); ?></strong>
 			</p>
-			<label class="screen-reader-text" for="<?php echo $metaname; ?>"><?php _e( 'Releasedate', self::$TAO_PUBLISH_TEXTDOMAIN ); ?></label>
-			<input type="text" class="widefat" name="<?php echo $metaname; ?>" id="<?php echo $metaname; ?>" value="<?php echo $date; ?>"/>
+			<label class="screen-reader-text" for="<?php echo esc_attr( $metaname ); ?>"><?php esc_html_e( 'Releasedate', 'tao-scheduleupdate-td' ); ?></label>
+			<input type="text" class="widefat" name="<?php echo esc_attr( $metaname ); ?>" id="<?php echo esc_attr( $metaname ); ?>" value="<?php echo esc_attr( $date ); ?>"/>
 			<p>
-				<strong><?php _e( 'Time', self::$TAO_PUBLISH_TEXTDOMAIN ); ?></strong>
+				<strong><?php esc_html_e( 'Time', 'tao-scheduleupdate-td' ); ?></strong>
 			</p>
-			<label class="screen-reader-text" for="<?php echo $metaname; ?>_time"><?php _e( 'Time', self::$TAO_PUBLISH_TEXTDOMAIN ); ?></label>
-			<select name="<?php echo $metaname; ?>_time_hrs" id="<?php echo $metaname; ?>_time">
+			<label class="screen-reader-text" for="<?php echo esc_attr( $metaname ); ?>_time"><?php esc_html_e( 'Time', 'tao-scheduleupdate-td' ); ?></label>
+			<select name="<?php echo esc_attr( $metaname ); ?>_time_hrs" id="<?php echo esc_attr( $metaname ); ?>_time">
 				<?php for ( $i = 0; $i < 24; $i++ ) : ?>
-				<option value="<?php echo sprintf( '%02d', $i ); ?>" <?php echo $i == $dateo->format( 'H' ) ? 'selected' : ''; ?>><?php echo sprintf( '%02d', $i ); ?></option>
+				<option value="<?php echo esc_attr( sprintf( '%02d', $i ) ); ?>" <?php echo $dateo->format( 'H' ) === $i ? 'selected' : ''; ?>><?php echo esc_html( sprintf( '%02d', $i ) ); ?></option>
 				<?php endfor; ?>
 			</select>:
-			<select name="<?php echo $metaname; ?>_time_mins">
-				<?php for ( $i = 0; $i < 60; $i+=5 ) : ?>
-				<option value="<?php echo sprintf( '%02d', $i ); ?>" <?php echo $i == ceil( $dateo->format( 'i' ) / 10 ) * 10 ? 'selected' : ''; ?>><?php echo sprintf( '%02d', $i ); ?></option>
+			<select name="<?php echo esc_attr( $metaname ); ?>_time_mins">
+				<?php for ( $i = 0; $i < 60; $i += 5 ) : ?>
+				<option value="<?php echo esc_attr( sprintf( '%02d', $i ) ); ?>" <?php echo ceil( $dateo->format( 'i' ) / 10 ) * 10 === $i ? 'selected' : ''; ?>><?php echo esc_html( sprintf( '%02d', $i ) ); ?></option>
 				<?php endfor; ?>
 			</select>
 			<p>
-				<?php echo sprintf( __( 'Please enter <i>Time</i> as %s', self::$TAO_PUBLISH_TEXTDOMAIN ), self::get_timezone_string() ); ?>
+				<?php echo sprintf( __( 'Please enter <i>Time</i> as %s', 'tao-scheduleupdate-td' ), self::get_timezone_string() ); ?>
 			</p>
 			<p>
 				<div id="pastmsg" style="color:red; display:none;">
 					<?php
-		echo __( 'The releasedate is in the past.', self::$TAO_PUBLISH_TEXTDOMAIN );
-		if ( TAO_ScheduleUpdate_Options::get( 'tsu_nodate' ) == 'nothing' ) {
-			echo __( 'This post will no be published.', self::$TAO_PUBLISH_TEXTDOMAIN );
-		} else {
-			echo __( 'This post will be published 5 minutes from now.', self::$TAO_PUBLISH_TEXTDOMAIN );
-		}
+					echo esc_html__( 'The releasedate is in the past.', 'tao-scheduleupdate-td' );
+					if ( TAO_ScheduleUpdate_Options::get( 'tsu_nodate' ) === 'nothing' ) {
+						echo esc_html__( 'This post will no be published.', 'tao-scheduleupdate-td' );
+					} else {
+						echo esc_html__( 'This post will be published 5 minutes from now.', 'tao-scheduleupdate-td' );
+					}
 ?>
 				</div>
 			</p>
@@ -383,15 +416,13 @@ class TAO_ScheduleUpdate {
 			$tzstring = '';
 		}
 
-		if ( empty( $tzstring ) ) { // Create a UTC+- zone if no timezone string exists
+		if ( empty( $tzstring ) ) { // Create a UTC+- zone if no timezone string exists.
 			$check_zone_info = false;
-			if ( 0 == $current_offset ) {
+			if ( 0 === $current_offset ) {
 				$tzstring = 'UTC+0';
-			}
-			elseif ( $current_offset < 0 ) {
+			} elseif ( $current_offset < 0 ) {
 				$tzstring = 'UTC' . $current_offset;
-			}
-			else {
+			} else {
 				$tzstring = 'UTC+' . $current_offset;
 			}
 		}
@@ -412,7 +443,7 @@ class TAO_ScheduleUpdate {
 		foreach ( $ids as $timezone ) {
 			$tzo = new DateTimeZone( $timezone );
 			$dt = new DateTime( 'now', $tzo );
-			if ( $tzo->getOffset( $dt ) == $offset ) {
+			if ( $tzo->getOffset( $dt ) === $offset ) {
 				return $tzo;
 			}
 		}
@@ -425,33 +456,38 @@ class TAO_ScheduleUpdate {
 	 * clears cron hook if post is trashed
 	 * restores cron hook if post us un-trashed
 	 *
-	 * @param string  $new_status the post's new status
-	 * @param string  $old_status the post's old status
-	 * @param post    $post       the post changing status
+	 * @param string $new_status the post's new status.
+	 * @param string $old_status the post's old status.
+	 * @param post   $post       the post changing status.
 	 *
 	 * @return void
 	 */
 	public static function prevent_status_change( $new_status, $old_status, $post ) {
-		if ( $new_status === $old_status && $new_status == self::$TAO_PUBLISH_STATUS ) return;
+		if ( $new_status === $old_status && $new_status === self::$_tao_publish_status ) { return;
+		}
 
-		if ( $old_status == self::$TAO_PUBLISH_STATUS && 'trash' != $new_status ) {
+		if ( $old_status === self::$_tao_publish_status && 'trash' !== $new_status ) {
 			remove_action( 'save_post', create_function( '$post_id, $post', 'return TAO_ScheduleUpdate::save_meta( $post_id, $post );' ), 10 );
 
-			$post->post_status = self::$TAO_PUBLISH_STATUS;
+			$post->post_status = self::$_tao_publish_status;
 			$u = wp_update_post( $post, true );
 
 			add_action( 'save_post', create_function( '$post_id, $post', 'return TAO_ScheduleUpdate::save_meta( $post_id, $post );' ), 10, 2 );
-		} elseif ( 'trash' == $new_status ) {
-			wp_clear_scheduled_hook( 'tao_publish_post', array( 'ID' => $post->ID ) );
-		} elseif ( 'trash' == $old_status && $new_status == self::$TAO_PUBLISH_STATUS ) {
-			wp_schedule_single_event( get_post_meta( $post->ID, self::$TAO_PUBLISH_STATUS.'_pubdate', true ), 'tao_publish_post', array( 'ID' => $post->ID ) );
+		} elseif ( 'trash' === $new_status ) {
+			wp_clear_scheduled_hook( 'tao_publish_post', array(
+				'ID' => $post->ID,
+			) );
+		} elseif ( 'trash' === $old_status && $new_status === self::$_tao_publish_status ) {
+			wp_schedule_single_event( get_post_meta( $post->ID, self::$_tao_publish_status . '_pubdate', true ), 'tao_publish_post', array(
+				'ID' => $post->ID,
+			) );
 		}
 	}
 
 	/**
 	 * Copies an entire post and sets it's status to 'scheduled update'
 	 *
-	 * @param post    $post the post to be copied
+	 * @param post $post the post to be copied.
 	 *
 	 * @return int ID of the newly created post
 	 */
@@ -460,11 +496,11 @@ class TAO_ScheduleUpdate {
 		$new_author = wp_get_current_user();
 
 		$original = $post->ID;
-		if ( $post->post_status == self::$TAO_PUBLISH_STATUS ) {
-			$original = get_post_meta( $post->ID, self::$TAO_PUBLISH_STATUS . '_original', true );
+		if ( $post->post_status === self::$_tao_publish_status ) {
+			$original = get_post_meta( $post->ID, self::$_tao_publish_status . '_original', true );
 		}
 
-		//create the new post
+		// create the new post.
 		$new_post = array(
 			'menu_order'     => $post->menu_order,
 			'comment_status' => $post->comment_status,
@@ -475,19 +511,19 @@ class TAO_ScheduleUpdate {
 			'post_mime_type' => $post->mime_type,
 			'post_parent'    => $post->ID,
 			'post_password'  => $post->post_password,
-			'post_status'    => self::$TAO_PUBLISH_STATUS,
+			'post_status'    => self::$_tao_publish_status,
 			'post_title'     => $post->post_title,
 			'post_type'      => $post->post_type,
 		);
 
-		//insert the new post
+		// insert the new post.
 		$new_post_id = wp_insert_post( $new_post );
 
-		//copy meta and terms over to the new post
+		// copy meta and terms over to the new post.
 		self::copy_meta_and_terms( $post->ID, $new_post_id );
 
-		//and finally referencing the original post
-		update_post_meta( $new_post_id, self::$TAO_PUBLISH_STATUS . '_original', $original );
+		// and finally referencing the original post.
+		update_post_meta( $new_post_id, self::$_tao_publish_status . '_original', $original );
 
 		/**
 		 * Fires when a post has been duplicated.
@@ -500,10 +536,10 @@ class TAO_ScheduleUpdate {
 	}
 
 	/**
-	 * copies meta and terms from one post to another
+	 * Copies meta and terms from one post to another
 	 *
-	 * @param int     $source_post_id      the post from which to copy
-	 * @param int     $destination_post_id the post which will get the meta and terms
+	 * @param int $source_post_id      the post from which to copy.
+	 * @param int $destination_post_id the post which will get the meta and terms.
 	 *
 	 * @return void
 	 */
@@ -512,10 +548,12 @@ class TAO_ScheduleUpdate {
 		$source_post = get_post( $source_post_id );
 		$destination_post = get_post( $destination_post_id );
 
-		//abort if any of the ids is not a post
-		if ( !$source_post || !$destination_post ) return;
+		// abort if any of the ids is not a post.
+		if ( ! $source_post || ! $destination_post ) { return;
+		}
 
-		/* remove all meta from the destination,
+		/*
+		 * remove all meta from the destination,
 		 * initialize to emptyarray if not set to prevent error in foreach loop
 		 */
 		$dest_keys = get_post_custom_keys( $destination_post->ID ) ?: array();
@@ -523,7 +561,7 @@ class TAO_ScheduleUpdate {
 			delete_post_meta( $destination_post->ID, $key );
 		}
 
-		//now for copying the metadata to the new post
+		// now for copying the metadata to the new post.
 		$meta_keys = get_post_custom_keys( $source_post->ID ) ?: array();
 		foreach ( $meta_keys as $key ) {
 			$meta_values = get_post_custom_values( $key, $source_post->ID );
@@ -533,18 +571,19 @@ class TAO_ScheduleUpdate {
 			}
 		}
 
-
-		//and now for copying the terms
+		// and now for copying the terms.
 		$taxonomies = get_object_taxonomies( $source_post->post_type );
 		foreach ( $taxonomies as $taxonomy ) {
-			$post_terms = wp_get_object_terms( $source_post->ID, $taxonomy, array( 'orderby' => 'term_order' ) );
+			$post_terms = wp_get_object_terms( $source_post->ID, $taxonomy, array(
+				'orderby' => 'term_order',
+			) );
 			$terms = array();
 			foreach ( $post_terms as $term ) {
 				$terms[] = $term->slug;
 			}
-			//reset taxonomy to empty
-			wp_set_object_terms( $destination_post->ID, NULL, $taxonomy );
-			//then add new terms
+			// reset taxonomy to empty.
+			wp_set_object_terms( $destination_post->ID, null, $taxonomy );
+			// then add new terms.
 			$what = wp_set_object_terms( $destination_post->ID, $terms, $taxonomy );
 		}
 
@@ -554,32 +593,40 @@ class TAO_ScheduleUpdate {
 	/**
 	 * Saves a post's publishing date.
 	 *
-	 * @param int     $post_id the post's id
-	 * @param post    $post    the post being saved
+	 * @param int  $post_id the post's id.
+	 * @param post $post    the post being saved.
 	 *
-	 * @return void
+	 * @return mixed
 	 */
 	public static function save_meta( $post_id, $post ) {
-		if ( $post->post_status == self::$TAO_PUBLISH_STATUS || get_post_meta( $post_id, self::$TAO_PUBLISH_STATUS . '_original', true ) ) {
-			$nonce = TAO_ScheduleUpdate::$TAO_PUBLISH_STATUS . '_nonce';
-			$pub = TAO_ScheduleUpdate::$TAO_PUBLISH_STATUS . '_pubdate';
+		if ( $post->post_status === self::$_tao_publish_status || get_post_meta( $post_id, self::$_tao_publish_status . '_original', true ) ) {
+			$nonce = TAO_ScheduleUpdate::$_tao_publish_status . '_nonce';
+			$pub = TAO_ScheduleUpdate::$_tao_publish_status . '_pubdate';
 			$stampchange = false;
 
-			if ( isset( $_POST[$nonce] ) && wp_verify_nonce( $_POST[$nonce], basename( __FILE__ ) !== 1 ) ) return $post_id;
-			if ( ! current_user_can( get_post_type_object( $post->post_type )->cap->edit_post, $post_id ) ) return $post_id;
+			if ( isset( $_POST[ $nonce ] ) && wp_verify_nonce( $_POST[ $nonce ], basename( __FILE__ ) !== 1 ) ) {
+				return $post_id;
+			}
+			if ( ! current_user_can( get_post_type_object( $post->post_type )->cap->edit_post, $post_id ) ) {
+				return $post_id;
+			}
 
-			if ( isset( $_POST[$pub] ) && isset( $_POST[$pub.'_time_hrs'] ) && isset( $_POST[$pub.'_time_mins'] ) && ! empty( $_POST[$pub] ) ) {
+			if ( isset( $_POST[ $pub ] ) && isset( $_POST[ $pub . '_time_hrs' ] ) && isset( $_POST[ $pub . '_time_mins' ] ) && ! empty( $_POST[ $pub ] ) ) {
 				$tz = self::get_timezone_object();
-				$stamp = DateTime::createFromFormat( 'd.m.Y H:i', $_POST[$pub] . ' ' . $_POST[$pub.'_time_hrs'] . ':' . $_POST[$pub.'_time_mins'], $tz )->getTimestamp();
-				if ( !$stamp || $stamp <= time() ) {
+				$stamp = DateTime::createFromFormat( 'd.m.Y H:i', $_POST[ $pub ] . ' ' . $_POST[ $pub . '_time_hrs' ] . ':' . $_POST[ $pub . '_time_mins' ], $tz )->getTimestamp();
+				if ( ! $stamp || $stamp <= time() ) {
 					$stamp = strtotime( '+5 minutes' );
 					$stampchange = true;
 				}
 
-				wp_clear_scheduled_hook( 'tao_publish_post', array( 'ID' => $post_id ) );
-				if ( !$stampchange || TAO_ScheduleUpdate_Options::get( 'tsu_nodate' ) == 'publish' ) {
+				wp_clear_scheduled_hook( 'tao_publish_post', array(
+					'ID' => $post_id,
+				) );
+				if ( ! $stampchange || TAO_ScheduleUpdate_Options::get( 'tsu_nodate' ) === 'publish' ) {
 					update_post_meta( $post_id, $pub, $stamp );
-					wp_schedule_single_event( $stamp, 'tao_publish_post', array( 'ID' => $post_id ) );
+					wp_schedule_single_event( $stamp, 'tao_publish_post', array(
+						'ID' => $post_id,
+					) );
 				}
 			}
 		}
@@ -592,15 +639,15 @@ class TAO_ScheduleUpdate {
 	 * the original post. This function is either called by wp_cron or if the user hits the
 	 * 'publish now' action
 	 *
-	 * @param int     $post_id the post's id
+	 * @param int $post_id the post's id.
 	 *
 	 * @return int the original post's id
 	 */
 	public static function publish_post( $post_id ) {
 
-		$orig_id = get_post_meta( $post_id, self::$TAO_PUBLISH_STATUS . '_original', true );
-		//break early if given post is not an actual scheduled post created by this plugin
-		if ( !$orig_id ) {
+		$orig_id = get_post_meta( $post_id, self::$_tao_publish_status . '_original', true );
+		// break early if given post is not an actual scheduled post created by this plugin.
+		if ( ! $orig_id ) {
 			return $post_id;
 		}
 
@@ -616,11 +663,11 @@ class TAO_ScheduleUpdate {
 		$post->post_parent = $orig->post_parent;
 		$post->post_status = $orig->post_status;
 		$post_date = date_i18n( 'Y-m-d H:i:s' );
-		$post->post_date = $post_date; //we need this to get wp to recognize this as a newly updated post
+		$post->post_date = $post_date; // we need this to get wp to recognize this as a newly updated post.
 		$post->post_date_gmt = get_gmt_from_date( $post_date );
 
-		delete_post_meta( $orig->ID, self::$TAO_PUBLISH_STATUS . '_original' );
-		delete_post_meta( $orig->ID, self::$TAO_PUBLISH_STATUS . '_pubdate' );
+		delete_post_meta( $orig->ID, self::$_tao_publish_status . '_original' );
+		delete_post_meta( $orig->ID, self::$_tao_publish_status . '_pubdate' );
 
 		wp_update_post( $post );
 		wp_delete_post( $post_id, true );
@@ -632,7 +679,7 @@ class TAO_ScheduleUpdate {
 	 * Wrapper function for cron automated publishing
 	 * disables the kses filters before and reenables them after the post has been published
 	 *
-	 * @param int     $post_id the post's id
+	 * @param int $post_id the post's id.
 	 *
 	 * @return void
 	 */
@@ -648,15 +695,15 @@ class TAO_ScheduleUpdate {
 	 *
 	 * @see date_i18n, DateTime, TAO_ScheduleUpdate::get_timezone_object
 	 *
-	 * @param int     $stamp unix timestamp to be formatted
+	 * @param int $stamp unix timestamp to be formatted.
 	 *
 	 * @return string the formatted timestamp
 	 */
-	public static function getPubdate( $stamp ) {
+	public static function get_pubdate( $stamp ) {
 		$date = new DateTime( 'now', self::get_timezone_object() );
 		$date->setTimestamp( $stamp );
 		$offset = get_option( 'gmt_offset' ) * 3600;
-		$str = date_i18n('d. F Y H:i \U\T\CO', $date->getTimestamp() + $offset);
+		$str = date_i18n( 'd. F Y H:i \U\T\CO', $date->getTimestamp() + $offset );
 		return $str;
 	}
 
