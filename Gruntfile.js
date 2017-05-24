@@ -48,7 +48,7 @@ module.exports = function( grunt ) {
 			options: {
 				preset: 'wordpress'
 			},
-			tsu: [ 'js/*.js', ],
+			tsu: [ 'js/*.js' ],
 			gruntfiles: [ 'Gruntfile.js' ]
 		},
 

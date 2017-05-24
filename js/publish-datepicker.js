@@ -1,39 +1,48 @@
-jQuery(document).ready(function($){
-	options = {
-				dayNamesMin: TAO_ScheduleUpdate.datepicker.daynames,//infused by wp_localize script
-				monthNames: TAO_ScheduleUpdate.datepicker.monthnames,//infused by wp_localize script
-				dateFormat: 'dd.mm.yy',
-				minDate: new Date(),
-				showOtherMonths: true,
-				firstDay: 1
-			};
+var TAOScheduleUpdate = TAOScheduleUpdate || {};
 
-	$('#' + TAO_ScheduleUpdate.datepicker.elementid).datepicker(options);
+jQuery( document ).ready( function( $ ) {
+	var options = {
+		dayNamesMin: TAOScheduleUpdate.datepicker.daynames, // Infused by wp_localize script
+		monthNames: TAOScheduleUpdate.datepicker.monthnames, // Infused by wp_localize script
+		dateFormat: 'dd.mm.yy',
+		minDate: new Date(),
+		showOtherMonths: true,
+		firstDay: 1
+	};
 
-	$('#publish').val(TAO_ScheduleUpdate.text.save);
+	$( '#' + TAOScheduleUpdate.datepicker.elementid ).datepicker( options );
 
-	$('#' + TAO_ScheduleUpdate.datepicker.elementid).on('change', function(evt) { TAO_ScheduleUpdate.checkTime(); });
-	$('#tao_sc_publish_pubdate_time').on('change', function(evt) { TAO_ScheduleUpdate.checkTime(); });
-	$('select[name=tao_sc_publish_pubdate_time_mins]').on('change', function(evt) { TAO_ScheduleUpdate.checkTime(); });
-});
+	$( '#publish' ).val( TAOScheduleUpdate.text.save );
 
-TAO_ScheduleUpdate = TAO_ScheduleUpdate || {};
+	$( '#' + TAOScheduleUpdate.datepicker.elementid ).on( 'change', function( evt ) {
+		TAOScheduleUpdate.checkTime();
+	} );
 
-TAO_ScheduleUpdate.checkTime = function() {
-	$ = jQuery;
+	$( '#tao_sc_publish_pubdate_time' ).on( 'change', function( evt ) {
+		TAOScheduleUpdate.checkTime();
+	} );
 
-	var now = new Date();
-	var st = $('#' + TAO_ScheduleUpdate.datepicker.elementid).val();
-	var time = $('#tao_sc_publish_pubdate_time').find(':selected').val() + ':' + $('select[name=tao_sc_publish_pubdate_time_mins]').find(':selected').val();
-	st += ' ' + time;
+	$( 'select[name=tao_sc_publish_pubdate_time_mins]' ).on( 'change', function( evt ) {
+		TAOScheduleUpdate.checkTime();
+	} );
+} );
+
+TAOScheduleUpdate.checkTime = function() {
+	var $ = jQuery;
+	var dt;
+
 	var pattern = /(\d{2})\.(\d{2})\.(\d{4}) (\d{2})\:(\d{2})/;
-	var dt = new Date(st.replace(pattern,'$3-$2-$1T$4:$5:00'));
+	var now = new Date();
+	var st = $( '#' + TAOScheduleUpdate.datepicker.elementid ).val();
+	var time = $( '#tao_sc_publish_pubdate_time' ).find( ':selected' ).val() + ':' + $( 'select[name=tao_sc_publish_pubdate_time_mins]' ).find( ':selected' ).val();
+	st += ' ' + time;
+	dt = new Date( st.replace( pattern, '$3-$2-$1T$4:$5:00' ) );
 
-	dt.setTime(dt.getTime() + dt.getTimezoneOffset()*60000);
+	dt.setTime( dt.getTime() + dt.getTimezoneOffset() * 60000 );
 
-	if (dt < now) {
-		$('#pastmsg').show();
+	if ( dt < now ) {
+		$( '#pastmsg' ).show();
 	} else {
-		$('#pastmsg').hide();
+		$( '#pastmsg' ).hide();
 	}
 };

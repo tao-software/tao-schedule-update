@@ -13,3 +13,4 @@ sitemap.xml.gz
 wp-config.php
 vendor/
 node_modules/
+phpcbf.diff
