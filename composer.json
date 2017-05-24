@@ -1,0 +1,8 @@
+{
+    "name": "tao/tao-schedule-update",
+    "type": "project",
+    "require": {
+        "wp-coding-standards/wpcs": "^0.11.0"
+    },
+    "license": "MIT"
+}
