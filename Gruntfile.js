@@ -54,7 +54,7 @@ module.exports = function( grunt ) {
 
 		phpcs: {
 			options: {
-				bin: 'vendor/bin/phpcs --report-diff=phpcbf.diff --exclude=WordPress.Files.FileName,Generic.Formatting.DisallowMultipleStatements,WordPress.WP.EnqueuedResources,WordPress.VIP.RestrictedFunctions,WordPress.WP.AlternativeFunctions,WordPress.WP.DiscouragedFunctions',
+				bin: 'vendor/bin/phpcs --report-diff=phpcbf.diff --exclude=WordPress.Files.FileName,Generic.Formatting.DisallowMultipleStatements,WordPress.WP.EnqueuedResources,WordPress.VIP.RestrictedFunctions,WordPress.WP.AlternativeFunctions,WordPress.WP.DiscouragedFunctions,WordPress.VIP.SuperGlobalInputUsage,WordPress.NamingConventions.ValidHookName',
 				standard: 'Wordpress'
 			},
 			tsu: {

@@ -199,9 +199,9 @@ class TAO_ScheduleUpdate {
 	 * @return array Array of available actions for the given post
 	 */
 	public static function page_row_actions( $actions, $post ) {
-		$copy = '?action=workflow_copy_to_publish&post=' . $post->ID;
+		$copy = '?action=workflow_copy_to_publish&post=' . $post->ID . '&n=' . wp_create_nonce( 'workflow_copy_to_publish' . $post->ID );
 		if ( $post->post_status === self::$_tao_publish_status ) {
-			$action = '?action=workflow_publish_now&post=' . $post->ID;
+			$action = '?action=workflow_publish_now&post=' . $post->ID  . '&n=' . wp_create_nonce( 'workflow_publish_now' . $post->ID );
 			$actions['publish_now'] = '<a href="' . admin_url( 'admin.php' . $action ) . '">' . __( 'Publish Now', 'tao-scheduleupdate-td' ) . '</a>';
 			if ( TAO_ScheduleUpdate_Options::get( 'tsu_recursive' ) ) {
 				$actions['copy_to_publish'] = '<a href="' . admin_url( 'admin.php' . $copy ) . '">' . __( 'Schedule recursive', 'tao-scheduleupdate-td' ) . '</a>';
@@ -266,6 +266,7 @@ class TAO_ScheduleUpdate {
 		if ( $publishing_id ) {
 			wp_redirect( admin_url( 'post.php?action=edit&post=' . $publishing_id ) );
 		} else {
+			// translators: %1$s: post type, %2$s: post title
 			$html  = sprintf( __( 'Could not schedule %1$s %2$s', 'tao-scheduleupdate-td' ), $post->post_type, '<i>' . htmlspecialchars( $post->post_title ) . '</i>' );
 			$html .= '<br><br>';
 			$html .= '<a href="' . esc_attr( admin_url( 'edit.php?post_type=' . $post->post_type ) ) . '">' . __( 'Back' ) . '</a>';
@@ -279,9 +280,11 @@ class TAO_ScheduleUpdate {
 	 * @return void
 	 */
 	public static function admin_action_workflow_publish_now() {
-		$post = get_post( $_REQUEST['post'] );
-		self::publish_post( $post->ID );
-		wp_redirect( admin_url( 'edit.php?post_type=' . $post->post_type ) );
+		if ( isset( $_REQUEST['post'] ) ) {
+			$post = get_post( absint( wp_unslash( $_REQUEST['post'] ) ) );
+			self::publish_post( $post->ID );
+			wp_redirect( admin_url( 'edit.php?post_type=' . $post->post_type ) );
+		}
 	}
 
 
@@ -376,7 +379,10 @@ class TAO_ScheduleUpdate {
 				<?php endfor; ?>
 			</select>
 			<p>
-				<?php echo sprintf( __( 'Please enter <i>Time</i> as %s', 'tao-scheduleupdate-td' ), self::get_timezone_string() ); ?>
+				<?php
+				// translators: timezone placeholder
+				echo sprintf( __( 'Please enter <i>Time</i> as %s', 'tao-scheduleupdate-td' ), self::get_timezone_string() ); // WPCS: XSS okay.
+				?>
 			</p>
 			<p>
 				<div id="pastmsg" style="color:red; display:none;">
@@ -604,7 +610,7 @@ class TAO_ScheduleUpdate {
 			$pub = TAO_ScheduleUpdate::$_tao_publish_status . '_pubdate';
 			$stampchange = false;
 
-			if ( isset( $_POST[ $nonce ] ) && wp_verify_nonce( $_POST[ $nonce ], basename( __FILE__ ) !== 1 ) ) {
+			if ( isset( $_POST[ $nonce ] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST[ $nonce ] ) ), basename( __FILE__ ) ) !== 1 ) {
 				return $post_id;
 			}
 			if ( ! current_user_can( get_post_type_object( $post->post_type )->cap->edit_post, $post_id ) ) {
@@ -613,7 +619,7 @@ class TAO_ScheduleUpdate {
 
 			if ( isset( $_POST[ $pub ] ) && isset( $_POST[ $pub . '_time_hrs' ] ) && isset( $_POST[ $pub . '_time_mins' ] ) && ! empty( $_POST[ $pub ] ) ) {
 				$tz = self::get_timezone_object();
-				$stamp = DateTime::createFromFormat( 'd.m.Y H:i', $_POST[ $pub ] . ' ' . $_POST[ $pub . '_time_hrs' ] . ':' . $_POST[ $pub . '_time_mins' ], $tz )->getTimestamp();
+				$stamp = DateTime::createFromFormat( 'd.m.Y H:i', absint( wp_unslash( $_POST[ $pub ] ) ) . ' ' . absint( wp_unslash( $_POST[ $pub . '_time_hrs' ] ) ) . ':' . absint( wp_unslash( $_POST[ $pub . '_time_mins' ] ) ), $tz )->getTimestamp(); // WPCS: XSS okay.
 				if ( ! $stamp || $stamp <= time() ) {
 					$stamp = strtotime( '+5 minutes' );
 					$stampchange = true;
