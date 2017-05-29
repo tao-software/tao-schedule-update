@@ -47,6 +47,10 @@ This is just a little side project I am maintaining as time permits. If you find
 
 == Changelog ==
 
+= 1.13 =
+
+* fix posts not being publicly visible when options flag was set
+
 = 1.12 =
 
 * fix timepicker stylesheet issue on https

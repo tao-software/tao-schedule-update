@@ -6,7 +6,7 @@
  * Description: Allows you to plan changes on any post type
  * Author: TAO Digital
  * Author URI: http://tao-digital.at/
- * Version: 1.12
+ * Version: 1.13
  * License: MIT
  *
  * @package tao
