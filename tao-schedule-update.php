@@ -100,12 +100,14 @@ class TAO_ScheduleUpdate {
 	 * @return void
 	 */
 	public static function load_pubdate() {
-		$stamp = get_post_meta( $_REQUEST['postid'], self::$_tao_publish_status . '_pubdate', true );
-		if ( $stamp ) {
-			$str  = '<div style="margin-left:20px">';
-			$str .= TaoPublish::get_pubdate( $stamp );
-			$str .= '</div>';
-			die( $str ); // WPCS: XSS okay.
+		if ( isset( $_REQUEST['postid'] ) ) { // WPCS: CSRF okay.
+			$stamp = get_post_meta( absint( wp_unslash( $_REQUEST['postid'] ) ), self::$_tao_publish_status . '_pubdate', true ); // WPCS: CSRF okay.
+			if ( $stamp ) {
+				$str  = '<div style="margin-left:20px">';
+				$str .= TaoPublish::get_pubdate( $stamp );
+				$str .= '</div>';
+				die( $str ); // WPCS: XSS okay.
+			}
 		}
 	}
 
@@ -135,6 +137,7 @@ class TAO_ScheduleUpdate {
 			'exclude_from_search'       => $exclude_from_search,
 			'show_in_admin_all_list'    => true,
 			'show_in_admin_status_list' => true,
+			// translators: number of posts.
 			'label_count'               => _n_noop( 'Scheduled Update <span class="count">(%s)</span>', 'Scheduled Update <span class="count">(%s)</span>', 'tao-scheduleupdate-td' ),
 		);
 
@@ -201,7 +204,7 @@ class TAO_ScheduleUpdate {
 	public static function page_row_actions( $actions, $post ) {
 		$copy = '?action=workflow_copy_to_publish&post=' . $post->ID . '&n=' . wp_create_nonce( 'workflow_copy_to_publish' . $post->ID );
 		if ( $post->post_status === self::$_tao_publish_status ) {
-			$action = '?action=workflow_publish_now&post=' . $post->ID  . '&n=' . wp_create_nonce( 'workflow_publish_now' . $post->ID );
+			$action = '?action=workflow_publish_now&post=' . $post->ID . '&n=' . wp_create_nonce( 'workflow_publish_now' . $post->ID );
 			$actions['publish_now'] = '<a href="' . admin_url( 'admin.php' . $action ) . '">' . __( 'Publish Now', 'tao-scheduleupdate-td' ) . '</a>';
 			if ( TAO_ScheduleUpdate_Options::get( 'tsu_recursive' ) ) {
 				$actions['copy_to_publish'] = '<a href="' . admin_url( 'admin.php' . $copy ) . '">' . __( 'Schedule recursive', 'tao-scheduleupdate-td' ) . '</a>';
@@ -261,16 +264,18 @@ class TAO_ScheduleUpdate {
 	 * @return void
 	 */
 	public static function admin_action_workflow_copy_to_publish() {
-		$post = get_post( $_REQUEST['post'] );
-		$publishing_id = self::create_publishing_post( $post );
-		if ( $publishing_id ) {
-			wp_redirect( admin_url( 'post.php?action=edit&post=' . $publishing_id ) );
-		} else {
-			// translators: %1$s: post type, %2$s: post title
-			$html  = sprintf( __( 'Could not schedule %1$s %2$s', 'tao-scheduleupdate-td' ), $post->post_type, '<i>' . htmlspecialchars( $post->post_title ) . '</i>' );
-			$html .= '<br><br>';
-			$html .= '<a href="' . esc_attr( admin_url( 'edit.php?post_type=' . $post->post_type ) ) . '">' . __( 'Back' ) . '</a>';
-			wp_die( $html ); // WPCS: XSS okay.
+		if ( isset( $_REQUEST['n'], $_REQUEST['post'] ) && wp_verify_nonce( sanitize_key( $_REQUEST['n'] ), 'workflow_copy_to_publish' . absint( $_REQUEST['post'] ) ) ) {
+			$post = get_post( absint( wp_unslash( $_REQUEST['post'] ) ) );
+			$publishing_id = self::create_publishing_post( $post );
+			if ( $publishing_id ) {
+				wp_redirect( admin_url( 'post.php?action=edit&post=' . $publishing_id ) );
+			} else {
+				// translators: %1$s: post type, %2$s: post title.
+				$html  = sprintf( __( 'Could not schedule %1$s %2$s', 'tao-scheduleupdate-td' ), $post->post_type, '<i>' . htmlspecialchars( $post->post_title ) . '</i>' );
+				$html .= '<br><br>';
+				$html .= '<a href="' . esc_attr( admin_url( 'edit.php?post_type=' . $post->post_type ) ) . '">' . __( 'Back' ) . '</a>';
+				wp_die( $html ); // WPCS: XSS okay.
+			}
 		}
 	}
 
@@ -280,7 +285,7 @@ class TAO_ScheduleUpdate {
 	 * @return void
 	 */
 	public static function admin_action_workflow_publish_now() {
-		if ( isset( $_REQUEST['post'] ) ) {
+		if ( isset( $_REQUEST['n'], $_REQUEST['post'] ) && wp_verify_nonce( sanitize_key( $_REQUEST['n'] ), 'workflow_publish_now' . absint( $_REQUEST['post'] ) ) ) {
 			$post = get_post( absint( wp_unslash( $_REQUEST['post'] ) ) );
 			self::publish_post( $post->ID );
 			wp_redirect( admin_url( 'edit.php?post_type=' . $post->post_type ) );
