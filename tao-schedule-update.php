@@ -8,6 +8,7 @@
  * Author URI: http://tao-digital.at/
  * Version: 1.13
  * License: MIT
+ * Text Domain: tao-scheduleupdate-td
  *
  * @package tao
  */
@@ -375,12 +376,12 @@ class TAO_ScheduleUpdate {
 			<label class="screen-reader-text" for="<?php echo esc_attr( $metaname ); ?>_time"><?php esc_html_e( 'Time', 'tao-scheduleupdate-td' ); ?></label>
 			<select name="<?php echo esc_attr( $metaname ); ?>_time_hrs" id="<?php echo esc_attr( $metaname ); ?>_time">
 				<?php for ( $i = 0; $i < 24; $i++ ) : ?>
-				<option value="<?php echo esc_attr( sprintf( '%02d', $i ) ); ?>" <?php echo $dateo->format( 'H' ) === $i ? 'selected' : ''; ?>><?php echo esc_html( sprintf( '%02d', $i ) ); ?></option>
+				<option value="<?php echo esc_attr( sprintf( '%02d', $i ) ); ?>" <?php echo intval( $dateo->format( 'H' ) ) === $i ? 'selected' : ''; ?>><?php echo esc_html( sprintf( '%02d', $i ) ); ?></option>
 				<?php endfor; ?>
 			</select>:
 			<select name="<?php echo esc_attr( $metaname ); ?>_time_mins">
 				<?php for ( $i = 0; $i < 60; $i += 5 ) : ?>
-				<option value="<?php echo esc_attr( sprintf( '%02d', $i ) ); ?>" <?php echo ceil( $dateo->format( 'i' ) / 10 ) * 10 === $i ? 'selected' : ''; ?>><?php echo esc_html( sprintf( '%02d', $i ) ); ?></option>
+				<option value="<?php echo esc_attr( sprintf( '%02d', $i ) ); ?>" <?php echo intval( ceil( $dateo->format( 'i' ) / 10 ) * 10 ) === $i ? 'selected' : ''; ?>><?php echo esc_html( sprintf( '%02d', $i ) ); ?></option>
 				<?php endfor; ?>
 			</select>
 			<p>
@@ -449,7 +450,7 @@ class TAO_ScheduleUpdate {
 	 * @return DateTimeZone timezone specified by the gmt_offset option
 	 */
 	private static function get_timezone_object() {
-		$offset = get_option( 'gmt_offset' ) * 3600;
+		$offset = intval( get_option( 'gmt_offset' ) * 3600 );
 		$ids = DateTimeZone::listIdentifiers();
 		foreach ( $ids as $timezone ) {
 			$tzo = new DateTimeZone( $timezone );
@@ -624,7 +625,7 @@ class TAO_ScheduleUpdate {
 
 			if ( isset( $_POST[ $pub ] ) && isset( $_POST[ $pub . '_time_hrs' ] ) && isset( $_POST[ $pub . '_time_mins' ] ) && ! empty( $_POST[ $pub ] ) ) {
 				$tz = self::get_timezone_object();
-				$stamp = DateTime::createFromFormat( 'd.m.Y H:i', absint( wp_unslash( $_POST[ $pub ] ) ) . ' ' . absint( wp_unslash( $_POST[ $pub . '_time_hrs' ] ) ) . ':' . absint( wp_unslash( $_POST[ $pub . '_time_mins' ] ) ), $tz )->getTimestamp(); // WPCS: XSS okay.
+				$stamp = DateTime::createFromFormat( 'd.m.Y H:i', sanitize_text_field( wp_unslash( $_POST[ $pub ] ) ) . ' ' . sanitize_text_field( wp_unslash( $_POST[ $pub . '_time_hrs' ] ) ) . ':' . sanitize_text_field( wp_unslash( $_POST[ $pub . '_time_mins' ] ) ), $tz )->getTimestamp(); // WPCS: XSS okay.
 				if ( ! $stamp || $stamp <= time() ) {
 					$stamp = strtotime( '+5 minutes' );
 					$stampchange = true;
