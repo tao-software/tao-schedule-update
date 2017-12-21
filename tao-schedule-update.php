@@ -322,6 +322,9 @@ class TAO_ScheduleUpdate {
 		if ( !$stamp && TAO_ScheduleUpdate_Options::get( 'tsu_nodate' ) == 'nothing' ) {
 			$date = '';
 		}
+        $decTime = floatval(get_option('gmt_offset'));
+        $GMThour = floor($decTime);
+        $GMTmin = round(60*($decTime-$GMThour));
 ?>
 			<p>
 				<strong><?php _e( 'Releasedate', self::$TAO_PUBLISH_TEXTDOMAIN ); ?></strong>
@@ -342,6 +345,7 @@ class TAO_ScheduleUpdate {
 				<option value="<?php echo sprintf( '%02d', $i ); ?>" <?php echo $i == ceil( $dateo->format( 'i' ) / 10 ) * 10 ? 'selected' : ''; ?>><?php echo sprintf( '%02d', $i ); ?></option>
 				<?php endfor; ?>
 			</select>
+            <input type="hidden" name="tao_added_minuts" id="tao_used_gmt" value="GMT<?php echo $GMThour > 0 ? '+' : ''; echo sprintf( '%02d', $GMThour ).':'.sprintf( '%02d', $GMTmin) ?>">
 			<p>
 				<?php echo sprintf( __( 'Please enter <i>Time</i> as %s', self::$TAO_PUBLISH_TEXTDOMAIN ), self::get_timezone_string() ); ?>
 			</p>

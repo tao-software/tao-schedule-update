@@ -26,12 +26,12 @@ TAO_ScheduleUpdate.checkTime = function() {
 	var st = $('#' + TAO_ScheduleUpdate.datepicker.elementid).val();
 	var time = $('#tao_sc_publish_pubdate_time').find(':selected').val() + ':' + $('select[name=tao_sc_publish_pubdate_time_mins]').find(':selected').val();
 	st += ' ' + time;
+    var currentGmt = $("#tao_used_gmt").val();
 	var pattern = /(\d{2})\.(\d{2})\.(\d{4}) (\d{2})\:(\d{2})/;
-	var dt = new Date(st.replace(pattern,'$3-$2-$1T$4:$5:00'));
 
-	dt.setTime(dt.getTime() + dt.getTimezoneOffset()*60000);
-
-	if (dt < now) {
+    var datestring = st.replace(pattern,'$3-$2-$1 $4:$5:00');
+    var dt = new Date(datestring + ' ' + currentGmt);
+    if (now.getTime() > dt.getTime()) {
 		$('#pastmsg').show();
 	} else {
 		$('#pastmsg').hide();
