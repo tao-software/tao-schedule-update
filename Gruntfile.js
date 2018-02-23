@@ -18,6 +18,10 @@ module.exports = function( grunt ) {
 			scripts: {
 				files: 'js/*.js',
 				tasks: [ 'jshint', 'jscs' ]
+			},
+			php: {
+				files: '*.php',
+				tasks: [ 'phpcs' ]
 			}
 		},
 
