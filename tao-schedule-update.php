@@ -325,11 +325,22 @@ class TAO_ScheduleUpdate {
 		for ( $i = 23;$i <= 29;$i++ ) {
 			$days[] = date_i18n( 'D', strtotime( '2014-03-' . $i . ' 00:00:00' ) );
 		}
+
+		// Get WP date format and make it usable in the datepicker.
+		$df = get_option( 'date_format' );
+		$df = str_replace(
+			array( 'd',  'j', 'S', 'l',  'D', 'm',  'n', 'F',  'M', 'Y',  'y', 'c',        'r',         'U' ),
+			array( 'dd', 'd', '',  'DD', 'D', 'mm', 'm', 'MM', 'M', 'yy', 'y', 'yy-mm-dd', 'D, d M yy', '@' ),
+			$df
+		);
+
 		$js_data = array(
 			'datepicker' => array(
 				'daynames'   => $days,
 				'monthnames' => $months,
-				'elementid' => self::$_tao_publish_status . '_pubdate',
+				'elementid'  => self::$_tao_publish_status . '_pubdate',
+				'displayid'  => self::$_tao_publish_status . '_pubdate_display',
+				'dateformat' => $df,
 			),
 			'text' => array(
 				'save' => __( 'Save' ),
@@ -359,7 +370,8 @@ class TAO_ScheduleUpdate {
 			$dateo->setTimestamp( $stamp );
 		}
 		$time = $dateo->format( 'H:i' );
-		$date = $dateo->format( 'd.m.Y' );
+		$date = date_i18n( get_option( 'date_format' ), $dateo->getTimestamp() );
+		$date2 = $dateo->format( 'd.m.Y' );
 
 		if ( ! $stamp && TAO_ScheduleUpdate_Options::get( 'tsu_nodate' ) === 'nothing' ) {
 			$date = '';
@@ -369,7 +381,8 @@ class TAO_ScheduleUpdate {
 				<strong><?php esc_html_e( 'Releasedate', 'tao-scheduleupdate-td' ); ?></strong>
 			</p>
 			<label class="screen-reader-text" for="<?php echo esc_attr( $metaname ); ?>"><?php esc_html_e( 'Releasedate', 'tao-scheduleupdate-td' ); ?></label>
-			<input type="text" class="widefat" name="<?php echo esc_attr( $metaname ); ?>" id="<?php echo esc_attr( $metaname ); ?>" value="<?php echo esc_attr( $date ); ?>"/>
+			<input type="hidden" name="<?php echo esc_attr( $metaname ); ?>" id="<?php echo esc_attr( $metaname ); ?>" value="<?php echo esc_attr( $date2 ); ?>"/>
+			<input type="text" class="widefat" name="<?php echo esc_attr( $metaname ); ?>_display" id="<?php echo esc_attr( $metaname ); ?>_display" value="<?php echo esc_attr( $date ); ?>"/>
 			<p>
 				<strong><?php esc_html_e( 'Time', 'tao-scheduleupdate-td' ); ?></strong>
 			</p>
@@ -715,7 +728,7 @@ class TAO_ScheduleUpdate {
 		$date = new DateTime( 'now', self::get_timezone_object() );
 		$date->setTimestamp( $stamp );
 		$offset = get_option( 'gmt_offset' ) * 3600;
-		$str = date_i18n( 'd. F Y H:i \U\T\CO', $date->getTimestamp() + $offset );
+		$str = date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ) . ' \U\T\CO', $date->getTimestamp() + $offset );
 		return $str;
 	}
 

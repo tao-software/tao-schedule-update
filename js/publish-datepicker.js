@@ -4,13 +4,15 @@ jQuery( document ).ready( function( $ ) {
 	var options = {
 		dayNamesMin: TAOScheduleUpdate.datepicker.daynames, // Infused by wp_localize script
 		monthNames: TAOScheduleUpdate.datepicker.monthnames, // Infused by wp_localize script
-		dateFormat: 'dd.mm.yy',
+		dateFormat: TAOScheduleUpdate.datepicker.dateformat, // Infused by wp_localize script
 		minDate: new Date(),
 		showOtherMonths: true,
-		firstDay: 1
+		firstDay: 1,
+		altField: '#' + TAOScheduleUpdate.datepicker.elementid,
+		altFormat: 'dd.mm.yy'
 	};
 
-	$( '#' + TAOScheduleUpdate.datepicker.elementid ).datepicker( options );
+	$( '#' + TAOScheduleUpdate.datepicker.displayid ).datepicker( options );
 
 	$( '#publish' ).val( TAOScheduleUpdate.text.save );
 
