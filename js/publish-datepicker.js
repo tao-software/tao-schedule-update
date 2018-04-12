@@ -40,8 +40,8 @@ TAOScheduleUpdate.checkTime = function() {
 	st += ' ' + time;
 
 	currentGmt = $( '#tao_used_gmt' ).val();
-	datestring = st.replace( pattern, '$3-$2-$1 $4:$5:00' );
-	dt = new Date( datestring + ' ' + currentGmt );
+	datestring = st.replace( pattern, '$3-$2-$1T$4:$5:00' );
+	dt = new Date( datestring + currentGmt );
 
 	if ( now.getTime() > dt.getTime() ) {
 		$( '#pastmsg' ).show();
