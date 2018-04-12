@@ -54,6 +54,7 @@ This is just a little side project I am maintaining as time permits. If you find
 * expand TAO_ScheduleUpdate\create_publishing_post action to also include the original post's ID
 * add TAO_ScheduleUpdate\before_publish_post action
 * add TAO_ScheduleUpdate\\publish_post_date filter
+* Fix error message in admin backend not working properly (thanks to LeniM)
 
 = 1.13 =
 
