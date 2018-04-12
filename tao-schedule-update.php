@@ -400,7 +400,7 @@ class TAO_ScheduleUpdate {
 				<option value="<?php echo esc_attr( sprintf( '%02d', $i ) ); ?>" <?php echo intval( ceil( $dateo->format( 'i' ) / 10 ) * 10 ) === $i ? 'selected' : ''; ?>><?php echo esc_html( sprintf( '%02d', $i ) ); ?></option>
 				<?php endfor; ?>
 			</select>
-			<input type="hidden" name="tao_added_minutes" id="tao_used_gmt" value="GMT<?php echo esc_attr( $gmt_hour >= 0 ? '+' : '' ); echo esc_attr( sprintf( '%02d', $gmt_hour ) . ':' . sprintf( '%02d', $gmt_min ) ) ?>">
+			<input type="hidden" name="tao_added_minutes" id="tao_used_gmt" value="GMT<?php echo esc_attr( $gmt_hour >= 0 ? '+' : '-' ); echo esc_attr( sprintf( '%02d', $gmt_hour ) . ':' . sprintf( '%02d', $gmt_min ) ) ?>">
 			<p>
 				<?php
 				// translators: timezone placeholder
