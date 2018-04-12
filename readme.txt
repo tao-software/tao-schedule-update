@@ -47,6 +47,11 @@ This is just a little side project I am maintaining as time permits. If you find
 
 == Changelog ==
 
+= 1.14 =
+
+* fix date formatting in datepicker
+* php7.2 compatibility (removed create_function)
+
 = 1.13 =
 
 * fix posts not being publicly visible when options flag was set

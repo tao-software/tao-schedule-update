@@ -6,7 +6,7 @@
  * Description: Allows you to plan changes on any post type
  * Author: TAO Digital
  * Author URI: http://tao-digital.at/
- * Version: 1.13
+ * Version: 1.14
  * License: MIT
  * Text Domain: tao-scheduleupdate-td
  *
@@ -62,9 +62,9 @@ class TAO_ScheduleUpdate {
 
 		$pt = TAO_ScheduleUpdate::get_post_types();
 		foreach ( $pt as $type ) {
-			add_action( 'manage_edit-' . $type->name . '_columns', create_function( '$columns', 'return TAO_ScheduleUpdate::manage_pages_columns( $columns );' ) );
-			add_filter( 'manage_' . $type->name . '_posts_custom_column', create_function( '$column, $post_id', 'return TAO_ScheduleUpdate::manage_pages_custom_column( $column, $post_id );' ), 10, 2 );
-			add_action( 'add_meta_boxes', create_function( '$post_type, $post', 'return TAO_ScheduleUpdate::add_meta_boxes_page( $post_type, $post );' ), 10, 2 );
+			add_action( 'manage_edit-' . $type->name . '_columns', array( 'TAO_ScheduleUpdate', 'manage_pages_columns' ) );
+			add_filter( 'manage_' . $type->name . '_posts_custom_column', array( 'TAO_ScheduleUpdate', 'manage_pages_custom_column' ), 10, 2 );
+			add_action( 'add_meta_boxes', array( 'TAO_ScheduleUpdate', 'add_meta_boxes_page' ), 10, 2 );
 		}
 	}
 
@@ -349,7 +349,7 @@ class TAO_ScheduleUpdate {
 
 		wp_localize_script( self::$_tao_publish_status . '-datepicker.js', 'TAOScheduleUpdate', $js_data );
 
-		add_meta_box( 'meta_' . self::$_tao_publish_status, self::$_tao_publish_metabox, create_function( '$post', 'TAO_ScheduleUpdate::create_meta_box( $post );' ), $post_type, 'side' );
+		add_meta_box( 'meta_' . self::$_tao_publish_status, self::$_tao_publish_metabox, array( 'TAO_ScheduleUpdate', 'create_meta_box' ), $post_type, 'side' );
 	}
 
 	/**
@@ -492,12 +492,12 @@ class TAO_ScheduleUpdate {
 		}
 
 		if ( $old_status === self::$_tao_publish_status && 'trash' !== $new_status ) {
-			remove_action( 'save_post', create_function( '$post_id, $post', 'return TAO_ScheduleUpdate::save_meta( $post_id, $post );' ), 10 );
+			remove_action( 'save_post', array( 'TAO_ScheduleUpdate', 'save_meta' ), 10 );
 
 			$post->post_status = self::$_tao_publish_status;
 			$u = wp_update_post( $post, true );
 
-			add_action( 'save_post', create_function( '$post_id, $post', 'return TAO_ScheduleUpdate::save_meta( $post_id, $post );' ), 10, 2 );
+			add_action( 'save_post', array( 'TAO_ScheduleUpdate', 'save_meta' ), 10, 2 );
 		} elseif ( 'trash' === $new_status ) {
 			wp_clear_scheduled_hook( 'tao_publish_post', array(
 				'ID' => $post->ID,
@@ -734,17 +734,17 @@ class TAO_ScheduleUpdate {
 
 }
 
-add_action( 'save_post', create_function( '$post_id, $post', 'return TAO_ScheduleUpdate::save_meta( $post_id, $post );' ), 10, 2 );
-add_action( 'tao_publish_post', create_function( '$post_id', 'return TAO_ScheduleUpdate::cron_publish_post( $post_id );' ) );
+add_action( 'save_post', array( 'TAO_ScheduleUpdate', 'save_meta' ), 10, 2 );
+add_action( 'tao_publish_post', array( 'TAO_ScheduleUpdate', 'cron_publish_post' ) );
 
-add_action( 'wp_ajax_load_pubdate', create_function( '', 'return TAO_ScheduleUpdate::load_pubdate();' ) );
-add_action( 'init', create_function( '', 'return TAO_ScheduleUpdate::init();' ), PHP_INT_MAX );
-add_action( 'admin_action_workflow_copy_to_publish', create_function( '', 'return TAO_ScheduleUpdate::admin_action_workflow_copy_to_publish();' ) );
-add_action( 'admin_action_workflow_publish_now', create_function( '', 'return TAO_ScheduleUpdate::admin_action_workflow_publish_now();' ) );
-add_action( 'transition_post_status', create_function( '$new_status, $old_status, $post', 'return TAO_ScheduleUpdate::prevent_status_change( $new_status, $old_status, $post );' ), 10, 3 );
+add_action( 'wp_ajax_load_pubdate', array( 'TAO_ScheduleUpdate', 'load_pubdate' ) );
+add_action( 'init', array( 'TAO_ScheduleUpdate', 'init' ), PHP_INT_MAX );
+add_action( 'admin_action_workflow_copy_to_publish', array( 'TAO_ScheduleUpdate', 'admin_action_workflow_copy_to_publish' ) );
+add_action( 'admin_action_workflow_publish_now', array( 'TAO_ScheduleUpdate', 'admin_action_workflow_publish_now' ) );
+add_action( 'transition_post_status', array( 'TAO_ScheduleUpdate', 'prevent_status_change' ), 10, 3 );
 
-add_filter( 'display_post_states', create_function( '$states', 'return TAO_ScheduleUpdate::display_post_states( $states );' ) );
-add_filter( 'page_row_actions', create_function( '$actions, $post', 'return TAO_ScheduleUpdate::page_row_actions( $actions, $post );' ), 10, 2 );
-add_filter( 'post_row_actions', create_function( '$actions, $post', 'return TAO_ScheduleUpdate::page_row_actions( $actions, $post );' ), 10, 2 );
-add_filter( 'manage_pages_columns', create_function( '$columns', 'return TAO_ScheduleUpdate::manage_pages_columns( $columns );' ) );
-add_filter( 'page_attributes_dropdown_pages_args', create_function( '$args', 'return TAO_ScheduleUpdate::parent_dropdown_status( $args );' ) );
+add_filter( 'display_post_states', array( 'TAO_ScheduleUpdate', 'display_post_states' ) );
+add_filter( 'page_row_actions', array( 'TAO_ScheduleUpdate', 'page_row_actions' ), 10, 2 );
+add_filter( 'post_row_actions', array( 'TAO_ScheduleUpdate', 'page_row_actions' ), 10, 2 );
+add_filter( 'manage_pages_columns', array( 'TAO_ScheduleUpdate', 'manage_pages_columns' ) );
+add_filter( 'page_attributes_dropdown_pages_args', array( 'TAO_ScheduleUpdate', 'parent_dropdown_status' ) );
