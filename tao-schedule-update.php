@@ -554,8 +554,9 @@ class TAO_ScheduleUpdate {
 		 * Fires when a post has been duplicated.
 		 *
 		 * @param int     $new_post_id ID of the newly created post.
+		 * @param int     $original    ID of the original post.
 		 */
-		do_action( 'TAO_ScheduleUpdate\\create_publishing_post', $new_post_id );
+		do_action( 'TAO_ScheduleUpdate\\create_publishing_post', $new_post_id, $original );
 
 		return $new_post_id;
 	}
@@ -680,6 +681,14 @@ class TAO_ScheduleUpdate {
 
 		$post = get_post( $post_id );
 
+		/**
+		 * Fires before a scheduled post is being updated
+		 *
+		 * @param WP_Post $post the scheduled update post.
+		 * @param WP_post $orig the original post.
+		 */
+		do_action( 'TAO_ScheduleUpdate\\before_publish_post', $post, $orig );
+
 		self::copy_meta_and_terms( $post->ID, $orig->ID );
 
 		$post->ID = $orig->ID;
@@ -688,6 +697,16 @@ class TAO_ScheduleUpdate {
 		$post->post_parent = $orig->post_parent;
 		$post->post_status = $orig->post_status;
 		$post_date = date_i18n( 'Y-m-d H:i:s' );
+
+		/**
+		 * Filter the new posts' post date
+		 *
+		 * @param string  $post_date the date to be used, must be in the form of `Y-m-d H:i:s`.
+		 * @param WP_Post $post      the scheduled update post.
+		 * @param WP_Post $orig      the original post.
+		 */
+		$post_date = apply_filters( 'TAO_ScheduleUpdate\\publish_post_date', $post_date, $post, $orig );
+
 		$post->post_date = $post_date; // we need this to get wp to recognize this as a newly updated post.
 		$post->post_date_gmt = get_gmt_from_date( $post_date );
 

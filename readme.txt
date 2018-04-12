@@ -51,6 +51,9 @@ This is just a little side project I am maintaining as time permits. If you find
 
 * fix date formatting in datepicker
 * php7.2 compatibility (removed create_function)
+* expand TAO_ScheduleUpdate\create_publishing_post action to also include the original post's ID
+* add TAO_ScheduleUpdate\before_publish_post action
+* add TAO_ScheduleUpdate\\publish_post_date filter
 
 = 1.13 =
 
