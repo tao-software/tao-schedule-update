@@ -222,7 +222,7 @@ class TAO_ScheduleUpdate_Options {
 
 }
 
-add_action( 'admin_init', create_function( '', 'return TAO_ScheduleUpdate_Options::init();' ) );
-add_action( 'admin_menu', create_function( '', 'return TAO_ScheduleUpdate_Options::options_page();' ) );
+add_action( 'admin_init', array( 'TAO_ScheduleUpdate_Options', 'init' ) );
+add_action( 'admin_menu', array( 'TAO_ScheduleUpdate_Options', 'options_page' ) );
 // since this file gets included inside a `init` callback we can just call this function straight out.
 TAO_ScheduleUpdate_Options::load_options();
