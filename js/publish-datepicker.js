@@ -31,18 +31,19 @@ jQuery( document ).ready( function( $ ) {
 
 TAOScheduleUpdate.checkTime = function() {
 	var $ = jQuery;
-	var dt;
+	var dt, datestring, currentGmt;
 
 	var pattern = /(\d{2})\.(\d{2})\.(\d{4}) (\d{2})\:(\d{2})/;
 	var now = new Date();
 	var st = $( '#' + TAOScheduleUpdate.datepicker.elementid ).val();
 	var time = $( '#tao_sc_publish_pubdate_time' ).find( ':selected' ).val() + ':' + $( 'select[name=tao_sc_publish_pubdate_time_mins]' ).find( ':selected' ).val();
 	st += ' ' + time;
-	dt = new Date( st.replace( pattern, '$3-$2-$1T$4:$5:00' ) );
 
-	dt.setTime( dt.getTime() + dt.getTimezoneOffset() * 60000 );
+	currentGmt = $( '#tao_used_gmt' ).val();
+	datestring = st.replace( pattern, '$3-$2-$1 $4:$5:00' );
+	dt = new Date( datestring + ' ' + currentGmt );
 
-	if ( dt < now ) {
+	if ( now.getTime() > dt.getTime() ) {
 		$( '#pastmsg' ).show();
 	} else {
 		$( '#pastmsg' ).hide();
