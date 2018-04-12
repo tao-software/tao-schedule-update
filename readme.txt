@@ -3,7 +3,7 @@ Contributors: romanweinberger, syberspace
 Donate link: http://software.tao.at/
 Tags: publishing, timing, cron, schedule, unattended
 Requires at least: 3.7.0
-Tested up to: 4.7.1
+Tested up to: 4.9.5
 Stable tag: trunk
 License: MIT
 License URI: http://opensource.org/licenses/MIT
