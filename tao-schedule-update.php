@@ -371,7 +371,7 @@ class TAO_ScheduleUpdate {
 			$dateo->setTimestamp( $stamp );
 		}
 		$time = $dateo->format( 'H:i' );
-		$date = date_i18n( get_option( 'date_format' ),$dateo->getTimestamp() + $offset);
+		$date = date_i18n( get_option( 'date_format' ), $dateo->getTimestamp() + $offset );
 		$date2 = $dateo->format( 'd.m.Y' );
 
 		if ( ! $stamp && TAO_ScheduleUpdate_Options::get( 'tsu_nodate' ) === 'nothing' ) {
