@@ -413,7 +413,7 @@ class TAO_ScheduleUpdate {
 					<?php
 					echo esc_html__( 'The releasedate is in the past.', 'tao-scheduleupdate-td' );
 					if ( TAO_ScheduleUpdate_Options::get( 'tsu_nodate' ) === 'nothing' ) {
-						echo esc_html__( 'This post will no be published.', 'tao-scheduleupdate-td' );
+						echo esc_html__( 'This post will not be published.', 'tao-scheduleupdate-td' );
 					} else {
 						echo esc_html__( 'This post will be published 5 minutes from now.', 'tao-scheduleupdate-td' );
 					}

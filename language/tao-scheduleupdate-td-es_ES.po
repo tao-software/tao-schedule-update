@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: TAO Schedule Update v1.04\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-17 09:49+0200\n"
-"PO-Revision-Date: 2018-08-17 09:50+0200\n"
+"POT-Creation-Date: 2018-08-17 09:55+0200\n"
+"PO-Revision-Date: 2018-08-17 09:55+0200\n"
 "Last-Translator: Paul Ellmaier <paul.ellmaier@tao.at>\n"
 "Language-Team: \n"
 "Language: es_ES\n"
@@ -14,7 +14,8 @@ msgstr ""
 "X-Generator: Poedit 2.0.6\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;"
-"_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2\n"
+"_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2;"
+"esc_html__;esc_html_e\n"
 "X-Poedit-Basepath: ..\n"
 "X-Textdomain-Support: yes\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -84,6 +85,11 @@ msgstr "Publicar ahora"
 msgid "Schedule recursive"
 msgstr "Horario recursivo"
 
+#: tao-schedule-update.php:233 tao-schedule-update.php:385
+#: tao-schedule-update.php:387
+msgid "Releasedate"
+msgstr "Fecha de lanzamiento"
+
 #: tao-schedule-update.php:275
 #, php-format
 msgid "Could not schedule %1$s %2$s"
@@ -97,30 +103,34 @@ msgstr "Atrás"
 msgid "Save"
 msgstr "Guardar"
 
+#: tao-schedule-update.php:391 tao-schedule-update.php:393
+msgid "Time"
+msgstr "Hora"
+
 #: tao-schedule-update.php:408
 #, php-format
 msgid "Please enter <i>Time</i> as %s"
 msgstr "Introduce la <i>hora</i> como %s"
+
+#: tao-schedule-update.php:414
+msgid "The releasedate is in the past."
+msgstr "La fecha de lanzamiento está en el pasado"
+
+#: tao-schedule-update.php:416
+msgid "This post will not be published."
+msgstr "Este Artículo no va a ser publicado"
+
+#: tao-schedule-update.php:418
+msgid "This post will be published 5 minutes from now."
+msgstr "Este Artículo va a ser publicado en 5 minutos a partir de ahora"
 
 #~ msgid " <span class=\"count\">(%s)</span>"
 #~ msgid_plural " <span class=\"count\">(%s)</span>"
 #~ msgstr[0] " <span class=\"count\">(%s)</span>"
 #~ msgstr[1] " <span class=\"count\">(%s)</span>"
 
-#~ msgid "Releasedate"
-#~ msgstr "Fecha de lanzamiento"
-
 #~ msgid "Could not schedule %s %s"
 #~ msgstr "No se pudo programar %s %s"
 
-#~ msgid "Time"
-#~ msgstr "Hora"
-
-#~ msgid "The releasedate is in the past."
-#~ msgstr "La fecha de lanzamiento está en el pasado"
-
 #~ msgid "This post will no be published."
 #~ msgstr "Este Artículo no va a ser publicado"
-
-#~ msgid "This post will be published 5 minutes from now."
-#~ msgstr "Este Artículo va a ser publicado en 5 minutos a partir de ahora"
