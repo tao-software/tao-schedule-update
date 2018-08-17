@@ -365,12 +365,13 @@ class TAO_ScheduleUpdate {
 		$stamp = get_post_meta( $post->ID, $metaname, true );
 		$date = '';
 		$time = '';
+		$offset = get_option( 'gmt_offset' ) * 3600;
 		$dateo = new DateTime( 'now', self::get_timezone_object() );
 		if ( $stamp ) {
 			$dateo->setTimestamp( $stamp );
 		}
 		$time = $dateo->format( 'H:i' );
-		$date = date_i18n( get_option( 'date_format' ), $dateo->getTimestamp() );
+		$date = date_i18n( get_option( 'date_format' ), $dateo->getTimestamp() + $offset );
 		$date2 = $dateo->format( 'd.m.Y' );
 
 		if ( ! $stamp && TAO_ScheduleUpdate_Options::get( 'tsu_nodate' ) === 'nothing' ) {
