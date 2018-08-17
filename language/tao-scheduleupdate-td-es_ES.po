@@ -2,112 +2,125 @@ msgid ""
 msgstr ""
 "Project-Id-Version: TAO Schedule Update v1.04\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-16 15:28+0100\n"
-"PO-Revision-Date: 2018-07-08 17:23+0200\n"
+"POT-Creation-Date: 2018-08-17 09:49+0200\n"
+"PO-Revision-Date: 2018-08-17 09:50+0200\n"
+"Last-Translator: Paul Ellmaier <paul.ellmaier@tao.at>\n"
 "Language-Team: \n"
+"Language: es_ES\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.0.8\n"
+"X-Generator: Poedit 2.0.6\n"
 "X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2\n"
+"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;"
+"_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2\n"
 "X-Poedit-Basepath: ..\n"
 "X-Textdomain-Support: yes\n"
-"Last-Translator: \n"
-"Language: es_ES\n"
 "X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: node_modules\n"
+"X-Poedit-SearchPathExcluded-1: vendor\n"
 
-#: options.php:26
+#: options.php:41
 msgid "No Date Set"
 msgstr "No hay fecha fijada"
 
-#: options.php:38
+#: options.php:53
 msgid "Posts Visible"
 msgstr "Entradas visibles"
 
-#: options.php:50
+#: options.php:65
 msgid "Recursive scheduling"
 msgstr "Programación recursiva"
 
-#: options.php:115
+#: options.php:131
 msgid "Publish right away"
 msgstr "Publicar inmediatamente"
 
-#: options.php:118
+#: options.php:134
 msgid "Don't publish"
 msgstr "No publicar"
 
-#: options.php:122
+#: options.php:138
 msgid "What should happen to a post if it is saved with no date set?"
-msgstr "¿Lo que debe suceder a un post si está guardado con ninguna fecha fijada?"
+msgstr ""
+"¿Lo que debe suceder a un post si está guardado con ninguna fecha fijada?"
 
-#: options.php:149
+#: options.php:165
 msgid "Scheduled posts are visible for anonymous users in the frontend"
-msgstr "Mensajes programados son accesibles para los usuarios anónimos en el frontend"
+msgstr ""
+"Los Artículos programados son visibles para los usuarios anónimos en el "
+"frontend"
 
-#: options.php:175
+#: options.php:191
 msgid "Allow recursive scheduling"
 msgstr "Permite programación recursiva"
 
-#: tao-schedule-update.php:33 tao-schedule-update.php:34
+#: tao-schedule-update.php:59 tao-schedule-update.php:60
 msgid "Scheduled Update"
 msgstr "Actualización programada"
 
-#: tao-schedule-update.php:111
-#, php-format
-msgid " <span class=\"count\">(%s)</span>"
-msgid_plural " <span class=\"count\">(%s)</span>"
-msgstr[0] "<span class=\"count\">(%s)</span>"
-msgstr[1] ""
-
-#: tao-schedule-update.php:153
-msgid "Original"
+#: tao-schedule-update.php:133
+msgctxt "Status General Name"
+msgid "Scheduled Update"
 msgstr ""
 
-#: tao-schedule-update.php:176
+#: tao-schedule-update.php:142
+#, php-format
+msgid "Scheduled Update <span class=\"count\">(%s)</span>"
+msgid_plural "Scheduled Update <span class=\"count\">(%s)</span>"
+msgstr[0] ""
+msgstr[1] ""
+
+#: tao-schedule-update.php:186
+msgid "Original"
+msgstr "Original"
+
+#: tao-schedule-update.php:209
 msgid "Publish Now"
 msgstr "Publicar ahora"
 
-#: tao-schedule-update.php:178
+#: tao-schedule-update.php:211
 msgid "Schedule recursive"
-msgstr ""
+msgstr "Horario recursivo"
 
-#: tao-schedule-update.php:200 tao-schedule-update.php:327
-#: tao-schedule-update.php:329
-msgid "Releasedate"
-msgstr "Fecha de lanzamiento"
-
-#: tao-schedule-update.php:240
+#: tao-schedule-update.php:275
 #, php-format
-msgid "Could not schedule %s %s"
-msgstr "No se pudo programar%s%s"
+msgid "Could not schedule %1$s %2$s"
+msgstr "No se pudo programar %1$s %2$s"
 
-#: tao-schedule-update.php:242
+#: tao-schedule-update.php:277
 msgid "Back"
 msgstr "Atrás"
 
-#: tao-schedule-update.php:294
+#: tao-schedule-update.php:346
 msgid "Save"
 msgstr "Guardar"
 
-#: tao-schedule-update.php:332 tao-schedule-update.php:334
-msgid "Time"
-msgstr "Hora"
-
-#: tao-schedule-update.php:346
+#: tao-schedule-update.php:408
 #, php-format
 msgid "Please enter <i>Time</i> as %s"
-msgstr "Introduce el <i>tiempo</i> como %s"
+msgstr "Introduce la <i>hora</i> como %s"
 
-#: tao-schedule-update.php:351
-msgid "The releasedate is in the past."
-msgstr ""
+#~ msgid " <span class=\"count\">(%s)</span>"
+#~ msgid_plural " <span class=\"count\">(%s)</span>"
+#~ msgstr[0] " <span class=\"count\">(%s)</span>"
+#~ msgstr[1] " <span class=\"count\">(%s)</span>"
 
-#: tao-schedule-update.php:353
-msgid "This post will no be published."
-msgstr ""
+#~ msgid "Releasedate"
+#~ msgstr "Fecha de lanzamiento"
 
-#: tao-schedule-update.php:355
-msgid "This post will be published 5 minutes from now."
-msgstr ""
+#~ msgid "Could not schedule %s %s"
+#~ msgstr "No se pudo programar %s %s"
+
+#~ msgid "Time"
+#~ msgstr "Hora"
+
+#~ msgid "The releasedate is in the past."
+#~ msgstr "La fecha de lanzamiento está en el pasado"
+
+#~ msgid "This post will no be published."
+#~ msgstr "Este Artículo no va a ser publicado"
+
+#~ msgid "This post will be published 5 minutes from now."
+#~ msgstr "Este Artículo va a ser publicado en 5 minutos a partir de ahora"
