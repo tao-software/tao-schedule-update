@@ -6,7 +6,7 @@
  * Description: Allows you to plan changes on any post type
  * Author: TAO Digital
  * Author URI: http://tao-digital.at/
- * Version: 1.14.01
+ * Version: 1.15
  * License: MIT
  * Text Domain: tao-scheduleupdate-td
  *
