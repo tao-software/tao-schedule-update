@@ -47,7 +47,15 @@ This is just a little side project I am maintaining as time permits. If you find
 
 == Changelog ==
 
+= 1.16 =
+
+Release Date:  TBD
+
+* security fix: permission checks so a user cannot schedule/update and replace another's post
+
 = 1.15 =
+
+Release Date:  August 17, 2018
 
 * fix timezone issue in datepicker (thanks to joaquinjsb)
 * add spanish translation (thanks to Manuel5cc and Julian Castro)
