@@ -3,7 +3,7 @@ Contributors: romanweinberger, syberspace
 Donate link: http://software.tao.at/
 Tags: publishing, timing, cron, schedule, unattended
 Requires at least: 3.7.0
-Tested up to: 4.9.8
+Tested up to: 5.1.1
 Stable tag: trunk
 License: MIT
 License URI: http://opensource.org/licenses/MIT
@@ -49,7 +49,7 @@ This is just a little side project I am maintaining as time permits. If you find
 
 = 1.16 =
 
-Release Date:  TBD
+Release Date:  April 19, 2019
 
 * security fix: permission checks so a user cannot schedule/update and replace another's post
 
