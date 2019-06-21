@@ -6,7 +6,7 @@
  * Description: Allows you to plan changes on any post type
  * Author: TAO Digital
  * Author URI: http://tao-digital.at/
- * Version: 1.15
+ * Version: 1.16
  * License: MIT
  * Text Domain: tao-scheduleupdate-td
  *
@@ -203,6 +203,10 @@ class TAO_ScheduleUpdate {
 	 * @return array Array of available actions for the given post
 	 */
 	public static function page_row_actions( $actions, $post ) {
+		if ( ! current_user_can( 'edit_post', $post->ID ) ) {
+			return $actions;
+		}
+
 		$copy = '?action=workflow_copy_to_publish&post=' . $post->ID . '&n=' . wp_create_nonce( 'workflow_copy_to_publish' . $post->ID );
 		if ( $post->post_status === self::$_tao_publish_status ) {
 			$action = '?action=workflow_publish_now&post=' . $post->ID . '&n=' . wp_create_nonce( 'workflow_publish_now' . $post->ID );
@@ -267,16 +271,21 @@ class TAO_ScheduleUpdate {
 	public static function admin_action_workflow_copy_to_publish() {
 		if ( isset( $_REQUEST['n'], $_REQUEST['post'] ) && wp_verify_nonce( sanitize_key( $_REQUEST['n'] ), 'workflow_copy_to_publish' . absint( $_REQUEST['post'] ) ) ) {
 			$post = get_post( absint( wp_unslash( $_REQUEST['post'] ) ) );
-			$publishing_id = self::create_publishing_post( $post );
-			if ( $publishing_id ) {
-				wp_redirect( admin_url( 'post.php?action=edit&post=' . $publishing_id ) );
-			} else {
-				// translators: %1$s: post type, %2$s: post title.
-				$html  = sprintf( __( 'Could not schedule %1$s %2$s', 'tao-scheduleupdate-td' ), $post->post_type, '<i>' . htmlspecialchars( $post->post_title ) . '</i>' );
-				$html .= '<br><br>';
-				$html .= '<a href="' . esc_attr( admin_url( 'edit.php?post_type=' . $post->post_type ) ) . '">' . __( 'Back' ) . '</a>';
-				wp_die( $html ); // WPCS: XSS okay.
+			if ( $post === null ) {
+				die(); // no output
 			}
+			if ( current_user_can( 'edit_post', $post->ID ) ) {
+				$publishing_id = self::create_publishing_post( $post );
+				if ( $publishing_id ) {
+					wp_redirect( admin_url( 'post.php?action=edit&post=' . $publishing_id ) );
+					exit;
+				}
+			}
+			// translators: %1$s: post type, %2$s: post title.
+			$html  = sprintf( __( 'Could not schedule %1$s %2$s', 'tao-scheduleupdate-td' ), $post->post_type, '<i>' . htmlspecialchars( $post->post_title ) . '</i>' );
+			$html .= '<br><br>';
+			$html .= '<a href="' . esc_attr( admin_url( 'edit.php?post_type=' . $post->post_type ) ) . '">' . __( 'Back' ) . '</a>';
+			wp_die( $html ); // WPCS: XSS okay.
 		}
 	}
 
@@ -288,7 +297,13 @@ class TAO_ScheduleUpdate {
 	public static function admin_action_workflow_publish_now() {
 		if ( isset( $_REQUEST['n'], $_REQUEST['post'] ) && wp_verify_nonce( sanitize_key( $_REQUEST['n'] ), 'workflow_publish_now' . absint( $_REQUEST['post'] ) ) ) {
 			$post = get_post( absint( wp_unslash( $_REQUEST['post'] ) ) );
-			self::publish_post( $post->ID );
+			$orig_id = get_post_meta( $post->ID, self::$_tao_publish_status . '_original', true );
+
+			// if user cannot edit the original, we will not replace it with an updated version
+			if ( $orig_id && current_user_can( 'edit_post', $orig_id ) ) {
+				self::publish_post( $post->ID );
+			}
+
 			wp_redirect( admin_url( 'edit.php?post_type=' . $post->post_type ) );
 		}
 	}
@@ -677,6 +692,7 @@ class TAO_ScheduleUpdate {
 	public static function publish_post( $post_id ) {
 
 		$orig_id = get_post_meta( $post_id, self::$_tao_publish_status . '_original', true );
+
 		// break early if given post is not an actual scheduled post created by this plugin.
 		if ( ! $orig_id ) {
 			return $post_id;
