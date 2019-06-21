@@ -278,6 +278,7 @@ class TAO_ScheduleUpdate {
 				$publishing_id = self::create_publishing_post( $post );
 				if ( $publishing_id ) {
 					wp_redirect( admin_url( 'post.php?action=edit&post=' . $publishing_id ) );
+					exit;
 				}
 			}
 			// translators: %1$s: post type, %2$s: post title.
@@ -296,7 +297,13 @@ class TAO_ScheduleUpdate {
 	public static function admin_action_workflow_publish_now() {
 		if ( isset( $_REQUEST['n'], $_REQUEST['post'] ) && wp_verify_nonce( sanitize_key( $_REQUEST['n'] ), 'workflow_publish_now' . absint( $_REQUEST['post'] ) ) ) {
 			$post = get_post( absint( wp_unslash( $_REQUEST['post'] ) ) );
-			self::publish_post( $post->ID );
+			$orig_id = get_post_meta( $post->ID, self::$_tao_publish_status . '_original', true );
+
+			// if user cannot edit the original, we will not replace it with an updated version
+			if ( $orig_id && current_user_can( 'edit_post', $orig_id ) ) {
+				self::publish_post( $post->ID );
+			}
+
 			wp_redirect( admin_url( 'edit.php?post_type=' . $post->post_type ) );
 		}
 	}
@@ -688,11 +695,6 @@ class TAO_ScheduleUpdate {
 
 		// break early if given post is not an actual scheduled post created by this plugin.
 		if ( ! $orig_id ) {
-			return $post_id;
-		}
-
-		// if user cannot edit the original, we will not replace it with an updated version
-		if ( ! current_user_can( 'edit_post', $orig_id ) ) {
 			return $post_id;
 		}
 
