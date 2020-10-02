@@ -580,7 +580,8 @@ class TAO_ScheduleUpdate {
 		$destination_post = get_post( $destination_post_id );
 
 		// abort if any of the ids is not a post.
-		if ( ! $source_post || ! $destination_post ) { return;
+		if ( ! $source_post || ! $destination_post ) {
+			return;
 		}
 
 		/*
@@ -589,12 +590,24 @@ class TAO_ScheduleUpdate {
 		 */
 		$dest_keys = get_post_custom_keys( $destination_post->ID ) ?: array();
 		foreach ( $dest_keys as $key ) {
+
+			// If the filter returns false, this metadata will not be deleted in the destionation post..
+			if ( ! apply_filters( 'TAO_ScheduleUpdate\\can_copy_metadata', true, $key, $source_post->ID, $destination_post->ID ) ) {
+				continue;
+			}
+
 			delete_post_meta( $destination_post->ID, $key );
 		}
 
 		// now for copying the metadata to the new post.
 		$meta_keys = get_post_custom_keys( $source_post->ID ) ?: array();
 		foreach ( $meta_keys as $key ) {
+
+			// If the filter returns false, this metadata will not be copied back to the destionation post.
+			if ( ! apply_filters( 'TAO_ScheduleUpdate\\can_copy_metadata', true, $key, $source_post->ID, $destination_post->ID ) ) {
+				continue;
+			}
+
 			$meta_values = get_post_custom_values( $key, $source_post->ID );
 			foreach ( $meta_values as $value ) {
 				$value = maybe_unserialize( $value );
@@ -605,6 +618,12 @@ class TAO_ScheduleUpdate {
 		// and now for copying the terms.
 		$taxonomies = get_object_taxonomies( $source_post->post_type );
 		foreach ( $taxonomies as $taxonomy ) {
+
+			// If the filter returns false, this taxonomy will neither be copied to the scheduled post nor back to the original, so it will not be touched.
+			if ( ! apply_filters( 'TAO_ScheduleUpdate\\can_copy_taxonomy', true, $taxonomy, $source_post->ID, $destination_post->ID ) ) {
+				continue;
+			}
+
 			$post_terms = wp_get_object_terms( $source_post->ID, $taxonomy, array(
 				'orderby' => 'term_order',
 			) );
