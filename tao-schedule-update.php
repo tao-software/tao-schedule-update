@@ -310,7 +310,7 @@ class TAO_ScheduleUpdate {
 		}
 
 		// hides everything except the 'publish' button in the 'publish'-metabox
-		echo '<style> #duplicate-action, #delete-action, #minor-publishing-actions, #misc-publishing-actions, #preview-action {display:none;} </style>'; // WPCS: XSS okay.
+		echo '<style> #duplicate-action, #delete-action, #minor-publishing-actions, #misc-publishing-actions > div, #preview-action {display:none;} #misc-publishing-actions > div.public-post-preview { display:block!important; } </style>'; // WPCS: XSS okay.
 
 		wp_enqueue_script( 'jquery-ui-datepicker' );
 		$url = '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/blitzer/jquery-ui.min.css';
