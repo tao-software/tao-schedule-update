@@ -2,7 +2,7 @@
 /**
  * TAO Schedule Update
  *
- * Plugin Name: TAO Schedule Update
+ * Plugin Name: Post Scheduled Updates
  * Description: Allows you to plan changes on any post type
  * Author: TAO Digital
  * Author URI: http://tao-digital.at/
