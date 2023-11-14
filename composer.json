@@ -1,8 +1,20 @@
 {
-    "name": "tao/tao-schedule-update",
-    "type": "project",
+    "name": "castillo-n/tao-schedule-update",
+    "description": "I am hoping to get this working with wp latest on php 8 and above and with composer call instead of plugin installation",
+    "homepage": "https://github.com/castillo-n/tao-schedule-update",
+    "forked-from": "https://github.com/tao-software/tao-schedule-update",
+    "type": "library",
+    "license": "MIT",
+    "minimum-stability": "dev",
     "require": {
-        "wp-coding-standards/wpcs": "^0.11.0"
+        "php": ">=8.0"
     },
-    "license": "MIT"
+    "support": {
+        "issues": "https://github.com/castillo-n/tao-schedule-update/issues"
+    },
+    "autoload": {
+        "psr-4": {
+            "ScheduleUpdates\\": "src/scheduled-updates"
+        }
+    }
 }
